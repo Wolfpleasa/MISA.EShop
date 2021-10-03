@@ -1,0 +1,51 @@
+@import url("../css/base/text-box.css");
+@import url("../css/base/tooltip.css");
+@import url("../css/base/toolbar.css");
+@import url("../css/base/loader.css");
+@import url("../css/base/combobox.css");
+@import url("../css/base/dropdown.css");
+@import url("../css/base/table.css");
+@import url("../css/base/paging.css");
+@import url("../css/base/attribute.css");
+@import url("../css/base/attribute-detail.css");
+@import url("../css/base/button-icon.css");
+@import url("../css/base/icon.css");
+@import url("../css/base/finding.css");
+@import url("../css/base/filter-option.css");
+@import url("../css/base/picture.css");
+@import url("../css/base/radio.css");
+@import url("../css/base/popup.css");
+@import url("../css/base/input-filter.css");
+@import url("../css/base/toast-message.css");
+@import url("../css/base/checkbox.css");
+@import url("../css/layout/header.css");
+@import url("../css/layout/content.css");
+@import url("../css/layout/formDetail.css");
+@import url("../css/layout/warning-popup.css");
+@font-face {
+    font-family: ggsans-regular;
+    src: url("../assets/font/GoogleSans-Regular.otf");
+}
+
+@font-face {
+    font-family: ggsans-bold;
+    src: url("../assets/font/GoogleSans-Bold.otf");
+}
+
+body {
+    font-family: roboto, Tahoma, sans-serif!important;
+    font-size: 13px;
+    margin: 0;
+    position: relative;
+    font-weight: 300;
+    /*min-width: 1366px;*/
+}
+
+.wrapper {
+    height: 100%;
+    width: 100%;
+}
+
+.fade {
+    opacity: 0.4;
+}

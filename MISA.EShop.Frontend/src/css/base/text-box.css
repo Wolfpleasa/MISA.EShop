@@ -1,0 +1,54 @@
+.eshop-inp {
+    position: relative;
+    display: flex;
+    padding: 8px 8px 8px 8px;
+    line-height: 32px;
+    justify-content: space-between;
+    width: 404px;
+}
+
+.eshop-inp.description {
+    width: 604px;
+}
+
+.eshop-inp .quiz {
+    background: url('../../assets/common-icon.png') no-repeat -179px -179px;
+    width: 12px;
+    height: 12px;
+    margin: 10px 0px 0px 8px;
+}
+
+.eshop-inp .textbox-default {
+    height: 32px;
+    border: 1px solid #c3c3c3;
+    padding: 5px 10px;
+    width: 238px;
+    outline: none;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.textbox-default.price {
+    width: 153px;
+    margin-right: 85px;
+    text-align: right;
+}
+
+.eshop-inp.description .textbox-default {
+    height: 80px;
+    width: 438px;
+    flex-direction: column;
+}
+
+.textbox-default:hover {
+    cursor: pointer;
+    border-color: #636dde;
+}
+
+.textbox-default:focus {
+    border-color: #636dde;
+}
+
+label {
+    font-size: 13px;
+}

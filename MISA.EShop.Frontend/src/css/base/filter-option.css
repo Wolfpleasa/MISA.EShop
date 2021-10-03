@@ -1,0 +1,42 @@
+.filter-option {
+    height: 32px;
+    width: 100%;
+    border: 1px solid #babec5;
+    box-sizing: border-box;
+    background-color: #fff;
+    display: flex;
+    position: relative;
+}
+
+.filter-option .inp {
+    height: 100%;
+    width: calc(100% - 40px);
+    outline: 0;
+    padding: 0;
+    border: 0;
+    padding-left: 8px;
+    font-size: 12px;
+}
+
+.filter-option:hover {
+    border-color: #636dde;
+}
+
+.filter-option:focus {
+    border-color: #636dde;
+}
+
+.filter-option .select-arrow {
+    width: 32px;
+    height: 100%;
+    cursor: pointer;
+}
+
+.filter-option .arrow {
+    margin: 10px 10px;
+    width: 12px;
+    height: 12px;
+    background-image: url("../../assets/icon/chevron-down.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+}

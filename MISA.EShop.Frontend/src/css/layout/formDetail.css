@@ -1,0 +1,76 @@
+#formDetail {
+    position: absolute;
+    top: 60px;
+    left: 158px;
+    right: 8px;
+    width: calc(100% - 166px);
+    height: calc(100vh - 60px);
+    background-color: #fff;
+}
+
+.save-or-cancel {
+    width: calc(100% - 13px);
+    margin-left: 13px;
+    height: 52px;
+    align-items: center;
+    display: flex;
+}
+
+.save-or-cancel .button-icon.save {
+    border-radius: 3px;
+    margin-right: 10px;
+    border-right: 0px;
+}
+
+.save-or-cancel .button-icon.cancel .icon {
+    margin: 13px 8px;
+    width: 10px;
+    height: 10px;
+}
+
+.save-or-cancel .button-icon.save .icon {
+    margin: 12.5px 8px;
+    width: 11px;
+    height: 11px;
+}
+
+.save-or-cancel .button-icon.cancel {
+    border-radius: 3px;
+    background-color: #fff;
+    color: #2b3173;
+    border-right: 0px;
+    font-weight: 700;
+}
+
+.save-or-cancel .button-icon.cancel:hover {
+    border: 1px solid #2b3173;
+    box-sizing: border-box;
+}
+
+#formDetail .main {
+    border-top: 1px solid #babec5;
+    border-bottom: 1px solid #babec5;
+    box-sizing: border-box;
+    max-height: calc(100% - 104px);
+    width: calc(100% - 8px);
+    padding-left: 8px;
+    overflow-y: scroll;
+}
+
+.main .title-info {
+    color: #757575;
+    font: 600 18px roboto;
+    padding: 12px 0px 16px 0px;
+}
+
+.main .statusBusiness {
+    display: flex;
+    padding: 4px 0;
+}
+
+.quiz {
+    background: url('../../assets/common-icon.png') no-repeat -179px -179px;
+    width: 12px;
+    height: 12px;
+    margin: 2px 0px 0px 8px;
+}

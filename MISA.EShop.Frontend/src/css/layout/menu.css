@@ -1,0 +1,42 @@
+.menu {
+    top: 52px;
+    height: calc(100vh - 52px);
+    width: 150px;
+    background-color: #2b3173;
+}
+
+.menu .menu-item {
+    height: 40px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    box-sizing: border-box;
+    cursor: pointer;
+    color: #aaacc7;
+}
+
+.menu .menu-item:hover {
+    background-color: #1e235a;
+    color: #fff;
+}
+
+.menu .menu-item-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.menu .menu-item-icon.inventory {
+    background-image: url("../../assets/icon/inventory.png");
+}
+
+.menu-item .menu-item-text {
+    height: 20px;
+    width: calc(100% - 30px);
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+}

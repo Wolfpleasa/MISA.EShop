@@ -1,0 +1,122 @@
+.eshop-cbb {
+    position: relative;
+    display: flex;
+    padding: 8px 0px 8px 8px;
+    line-height: 32px;
+    justify-content: space-between;
+    width: 404px;
+}
+
+.combo-box-select {
+    display: flex;
+    width: 238px;
+    height: 32px;
+    border: 1px solid #c3c3c3;
+    border-radius: 3px;
+    background-color: #fff;
+    box-sizing: border-box;
+    outline: 0;
+    cursor: pointer;
+    padding: 0;
+}
+
+.combo-box-select:focus {
+    border-color: #636dde;
+}
+
+.combo-box-select:active {
+    border-color: #636dde;
+}
+
+.combo-box-select:hover {
+    border-color: #636dde;
+}
+
+.combo-box-select .inp {
+    border: 0;
+    outline: 0;
+    padding: 0;
+    width: calc(100% - 56px);
+    height: 29px;
+    margin-left: 8px;
+    cursor: pointer;
+    line-height: 32px;
+    box-sizing: border-box;
+}
+
+.combo-box-select .select-arrow {
+    width: 24px;
+    height: 100%;
+}
+
+.combo-box-select .arrow {
+    margin: 10px 6px;
+    width: 12px;
+    height: 12px;
+    background-image: url("../../assets/icon/chevron-down.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+}
+
+.combo-box-select .arrow.rot-180 {
+    transform: rotate(180deg);
+    transition: transform 1s;
+}
+
+.combo-box-select .arrow.rot-0 {
+    transform: rotate(0deg);
+    transition: transform 1s;
+}
+
+.combo-box-select .add-option {
+    width: 24px;
+    height: 100%;
+    background-color: #f5f5f5;
+    border-left: 1px solid #c3c3c3;
+    box-sizing: border-box;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.combo-box-select .add-option .icon-plus {
+    margin: 11px 7px;
+    width: 10px;
+    height: 10px;
+    background: url('../../assets/common-icon.png') no-repeat -29px -130px;
+}
+
+.combo-box {
+    width: 214px;
+    box-shadow: 0 0 5px 1px #e5e5e5;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #bbb;
+    box-sizing: border-box;
+    z-index: 2;
+    padding: 4px 0;
+    max-height: 160px;
+    overflow-y: scroll;
+    border-radius: 2px;
+    margin-top: 33px;
+    margin-left: 166px;
+}
+
+.combo-box .combo-box-item {
+    width: 100%;
+    line-height: 32px;
+    height: 32px;
+    width: calc(100% - 16px);
+    padding-left: 16px;
+    cursor: pointer;
+}
+
+.combo-box .combo-box-item.bg-hover {
+    background-color: #E9EBEE !important;
+    color: #636dde;
+}
+
+.combo-box .combo-box-item:hover {
+    background-color: #E9EBEE !important;
+    color: #636dde;
+}

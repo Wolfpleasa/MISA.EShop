@@ -1,0 +1,15 @@
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\bin\Debug\net5.0\MISA.Infrastructure.deps.json
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\bin\Debug\net5.0\MISA.Infrastructure.dll
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\bin\Debug\net5.0\ref\MISA.Infrastructure.dll
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\bin\Debug\net5.0\MISA.Infrastructure.pdb
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\bin\Debug\net5.0\MISA.Core.dll
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\bin\Debug\net5.0\MISA.Core.pdb
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\obj\Debug\net5.0\MISA.Infrastructure.csproj.AssemblyReference.cache
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\obj\Debug\net5.0\MISA.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\obj\Debug\net5.0\MISA.Infrastructure.AssemblyInfoInputs.cache
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\obj\Debug\net5.0\MISA.Infrastructure.AssemblyInfo.cs
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\obj\Debug\net5.0\MISA.Infrastructure.csproj.CoreCompileInputs.cache
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\obj\Debug\net5.0\MISA.Infrastructure.csproj.CopyComplete
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\obj\Debug\net5.0\MISA.Infrastructure.dll
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\obj\Debug\net5.0\ref\MISA.Infrastructure.dll
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.Infrastructure\obj\Debug\net5.0\MISA.Infrastructure.pdb

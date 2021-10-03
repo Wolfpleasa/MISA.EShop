@@ -1,0 +1,134 @@
+.d-flex {
+    display: flex !important;
+}
+
+.d-none {
+    display: none;
+}
+
+.v-visible {
+    visibility: visible;
+}
+
+.v-hidden {
+    visibility: hidden;
+}
+
+.bg-select {
+    background-color: #636dde !important;
+    color: #fff;
+}
+
+.fs-18 {
+    font-size: 18px;
+}
+
+.selected-row {
+    background: rgb(223, 218, 218);
+}
+
+.z-index-11 {
+    z-index: 11;
+}
+
+.z-index-1 {
+    z-index: 1;
+}
+
+.z-index-2 {
+    z-index: 2;
+}
+
+.z-index-12 {
+    z-index: 12;
+}
+
+.mr-10 {
+    margin-right: 10px;
+}
+
+.mr-30 {
+    margin-right: 30px;
+}
+
+.ml-10 {
+    margin-left: 10px;
+}
+
+.ml-40 {
+    margin-left: 40px;
+}
+
+.ml-5 {
+    margin-left: 5px;
+}
+
+.mt-16 {
+    margin-top: 16px;
+}
+
+.mt-8 {
+    margin-top: 8px;
+}
+
+.pd-4 {
+    padding: 4px 0px;
+}
+
+.pd-2 {
+    padding: 0px 2px;
+}
+
+.pd-8 {
+    padding: 8px 0px;
+}
+
+.pd-l-10 {
+    padding: 8px 0px 8px 10px;
+}
+
+.lh-56 {
+    line-height: 56px;
+}
+
+.ta-center {
+    text-align: center;
+}
+
+.ta-r {
+    text-align: right;
+}
+
+.ta-l {
+    text-align: left;
+}
+
+.cl-red {
+    color: red;
+    margin-left: 5px;
+}
+
+.p-relative {
+    position: relative;
+}
+
+.pageCover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #00000066;
+}
+
+.borderRed {
+    border-color: #FF4747 !important;
+}
+
+.w-238 {
+    width: 238px;
+}
+
+.w-153 {
+    width: 153px;
+}

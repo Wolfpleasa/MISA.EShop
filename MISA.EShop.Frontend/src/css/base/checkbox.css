@@ -1,0 +1,12 @@
+.checkbox {
+    background: url('../../assets/common-icon.png') no-repeat -3px -78px;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+.checkbox.checked {
+    background: url('../../assets/common-icon.png') no-repeat -28px -78px;
+    width: 14px;
+    height: 14px;
+}

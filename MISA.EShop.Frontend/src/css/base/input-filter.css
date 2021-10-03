@@ -1,0 +1,16 @@
+.input-filter {
+    height: 32px;
+    width: calc(100% - 32px);
+    border: 1px solid #babec5;
+    box-sizing: border-box;
+    outline: 0;
+    padding-left: 8px;
+}
+
+.input-filter:hover {
+    border-color: #636dde;
+}
+
+.input-filter:focus {
+    border-color: #636dde;
+}

@@ -1,0 +1,26 @@
+.radio-item {
+    width: auto;
+    margin-right: 16px;
+    display: flex;
+    cursor: pointer;
+    outline: 0;
+}
+
+.radio {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 5px;
+    background: url('../../assets/common-icon.png') no-repeat -77px -77px;
+}
+
+
+/* .radio-item:focus {
+    border: 1px solid #2b3173;
+} */
+
+.radio-item.selected .radio {
+    background: url('../../assets/common-icon.png') no-repeat -102px -77px !important;
+    background-size: 16px 16px;
+    border: 0px;
+}

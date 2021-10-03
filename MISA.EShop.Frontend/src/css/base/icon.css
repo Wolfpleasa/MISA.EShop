@@ -1,0 +1,50 @@
+.icon-add {
+    background: url('../../assets/common-icon.png') no-repeat -4px -130px;
+    width: 11px;
+    height: 10px;
+    margin: 13px 8px;
+}
+
+.icon-duplicate {
+    background: url('../../assets/common-icon.png') no-repeat -54px -204px;
+    width: 11px;
+    height: 12px;
+    margin: 12px 8px;
+}
+
+.icon-edit {
+    background: url('../../assets/common-icon.png') no-repeat -79px -205px;
+    width: 12px;
+    height: 12px;
+    margin: 12px 8px;
+}
+
+.icon-delete {
+    background: url('../../assets/common-icon.png') no-repeat -105px -205px;
+    width: 10px;
+    height: 12px;
+    margin: 12px 8px;
+}
+
+.icon-refresh {
+    background: url('../../assets/common-icon.png') no-repeat -129px -202px;
+    width: 12px;
+    height: 16px;
+    margin: 10px 8px;
+}
+
+.icon-save {
+    background: url('../../assets/common-icon.png')no-repeat -330px -129px;
+}
+
+.icon-cancel {
+    background: url('../../assets/common-icon.png') no-repeat -255px -130px;
+    width: 10px;
+    height: 10px;
+}
+
+.icon-cancel-white {
+    background: url('../../assets/common-icon.png') no-repeat -280px -130px;
+    width: 10px;
+    height: 10px;
+}

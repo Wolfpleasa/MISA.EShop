@@ -1,0 +1,42 @@
+.button-icon {
+    height: 36px;
+    display: flex;
+    color: #fff;
+    text-align: center;
+    background-color: #2b3173;
+    line-height: 36px;
+    outline: 0;
+    width: fit-content;
+    border-right: 1px solid #1e235a;
+    padding-right: 7px;
+    cursor: pointer;
+    box-sizing: border-box;
+    font-weight: 300;
+}
+
+.button-icon:hover {
+    background-color: #6b6f9d;
+}
+
+.button-icon:active {
+    background-color: #6b6f9d;
+}
+
+.button-icon .button-text {
+    white-space: nowrap;
+    padding-right: 5px;
+}
+
+.button-icon .btn-drop {
+    width: 6px;
+    height: 6px;
+    background-image: url("../../assets/icon/add-arrow.png");
+    background-size: 6px 6px;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 15px 5px 0px 7px;
+}
+
+.border-2 {
+    border-right: 3px solid #1e235a !important;
+}

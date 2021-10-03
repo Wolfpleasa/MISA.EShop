@@ -1,0 +1,21 @@
+.list-dropdown {
+    height: fit-content;
+    position: absolute;
+    padding: 4px 6px 4px 4px;
+    top: 69px;
+    z-index: 4;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+.dropdown-item {
+    height: 32px;
+    padding-left: 16px;
+    line-height: 32px;
+    cursor: pointer;
+    width: calc(100% - 16px);
+}
+
+.dropdown-item:hover {
+    background-color: #616ec6;
+}
