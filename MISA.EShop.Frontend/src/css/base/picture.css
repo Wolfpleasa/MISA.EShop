@@ -38,15 +38,9 @@
     height: 122px;
     display: flex;
     align-items: center;
-}
-
-.img-product {
-    width: 80px;
-    height: 80px;
     background-image: url("../../assets/icon/bag.png");
-    background-size: contain;
+    background-repeat: no-repeat;
     background-position: center;
-    margin-left: 59px;
 }
 
 .btn-image {
@@ -65,6 +59,24 @@
     justify-content: center;
     margin-left: 79px;
     font-weight: 600;
+}
+
+.btn-image.d-flex .button-icon {
+    margin-left: 60px;
+}
+
+.btn-image .icon-cancel {
+    height: 24px;
+    background-color: #fff;
+    width: 40px;
+    border-radius: 3px;
+    justify-content: center;
+    margin-left: 10px;
+    font-weight: 600;
+    border: 1px solid #2b3173;
+    box-sizing: border-box;
+    background: url('../../assets/common-icon.png') no-repeat -242px -125px;
+    cursor: pointer;
 }
 
 .note {

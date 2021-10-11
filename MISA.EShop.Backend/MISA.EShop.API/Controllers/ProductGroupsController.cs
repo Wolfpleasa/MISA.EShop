@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MISA.Core.CommonFn;
 using MISA.Core.Entities;
+using MISA.Core.Enumeration;
 using MISA.Core.Interfaces.Repository;
 using MISA.Core.Interfaces.Services;
 using System;
@@ -51,15 +53,8 @@ namespace MISA.EShop.API.Controllers
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return BadRequest(newObj);
+                   var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -75,7 +70,7 @@ namespace MISA.EShop.API.Controllers
             {
                 var productGroup = _productGroupRepository.GetProductGroupByName(productGroupName);
 
-                if (productGroup.Count() == 0)
+                if (productGroup == null)
                 {
                     return NoContent();
                 }
@@ -84,15 +79,8 @@ namespace MISA.EShop.API.Controllers
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return BadRequest(newObj);
+                   var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -122,17 +110,13 @@ namespace MISA.EShop.API.Controllers
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return StatusCode(500, newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
+
+
+   
         #endregion
     }
 }

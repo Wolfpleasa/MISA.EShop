@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MISA.Core.CommonFn;
+using MISA.Core.Enumeration;
 using MISA.Core.Entities;
 using MISA.Core.Interfaces.Repository;
 using MISA.Core.Interfaces.Services;
@@ -51,15 +53,8 @@ namespace MISA.EShop.API.Controllers
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return BadRequest(newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -72,14 +67,10 @@ namespace MISA.EShop.API.Controllers
         public IActionResult GetByName(string unitName)
         {
             try
-            {
-                //string str = unitName.Substring(0, 1).ToUpper();
-                //string str1 = unitName.Substring(1, unitName.Length);
-                //unitName = str + str1;
-                
+            {                        
                 var unit = _unitRepository.GetUnitByName(unitName);
 
-                if (!unit.Any())
+                if (unit == null)
                 {
                     return NoContent();
                 }
@@ -88,15 +79,8 @@ namespace MISA.EShop.API.Controllers
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return BadRequest(newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -126,15 +110,8 @@ namespace MISA.EShop.API.Controllers
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return StatusCode(500, newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
         #endregion

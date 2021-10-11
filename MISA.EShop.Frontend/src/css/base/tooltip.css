@@ -3,30 +3,38 @@
 }
 
 .tooltip {
-    height: 16px;
+    height: auto;
     position: absolute;
-    width: 16px;
+    width: calc(100% - 68px);
+    left: 28px;
+    right: 28px;
+    top: 40px;
     z-index: 10;
-    background-color: #ff4747;
-    text-align: center;
+    background-color: #333;
     line-height: 17px;
-    border-radius: 4px;
-    margin: 8px 4px;
+    border-radius: 2px;
+    padding: 6px 6px;
+}
+
+.tt-field:hover .tooltip {
+    display: block !important;
+}
+
+.tt-field .tooltip {
+    width: fit-content;
+    margin: 0;
+    top: -29px;
+    margin-right: 30px;
+    white-space: nowrap;
+    left: unset;
+    right: -16px;
+}
+
+.paging .tt-field .tooltip {
+    right: -54px;
 }
 
 .tooltip .tooltip-text {
-    max-width: 200px;
     color: #fff;
-}
-
-.tooltip .tooltip-icon {
-    position: absolute;
-    background-image: url("../../assets/icon/tooltip-arrow.png");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 16px 16px;
-    width: 16px;
-    height: 16px;
-    left: calc((100% - 16px) / 2);
-    top: 55px
+    text-align: center;
 }

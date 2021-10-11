@@ -18,14 +18,24 @@
     margin: 10px 0px 0px 8px;
 }
 
-.eshop-inp .textbox-default {
+.input-tooltip {
+    display: flex;
     height: 32px;
+    width: 238px;
+}
+
+.eshop-inp .textbox-default {
+    height: 100%;
     border: 1px solid #c3c3c3;
     padding: 5px 10px;
-    width: 238px;
+    width: 100%;
     outline: none;
     border-radius: 3px;
     box-sizing: border-box;
+}
+
+.eshop-inp .textbox-default.width-smaller {
+    width: calc(100% - 24px);
 }
 
 .textbox-default.price {
@@ -34,10 +44,14 @@
     text-align: right;
 }
 
-.eshop-inp.description .textbox-default {
+.eshop-inp.description .input-tooltip {
     height: 80px;
     width: 438px;
-    flex-direction: column;
+}
+
+.eshop-inp.description .textbox-default {
+    line-height: 1;
+    white-space: normal;
 }
 
 .textbox-default:hover {

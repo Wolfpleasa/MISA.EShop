@@ -5,35 +5,41 @@
       <span v-if="obligate == 'true'"><span class="cl-red">*</span></span>
       <div v-if="FieldName == 'PurchasePrice'" class="quiz"></div>
     </div>
-    <ToolTip :hideToolTip="hideToolTip" />
-    <input
-      :tabindex="tabindex"
-      :type="type"
-      :placeholder="placeholder"
-      :FieldName="FieldName"
-      :maxlength="maxlength"
-      :class="['textbox-default', subClass, { borderRed: hasBorderRed }]"
-      ref="inputREF"
-      :obligate="obligate"
-      :onlyHasNumber="onlyHasNumber"
-      v-model="inputValue"
-      @input="onInput($event.target.value)"
-      @blur="onBlur($event.target.value)"
-    />
+    <div class="input-tooltip">
+      <input
+        :tabindex="tabindex"
+        :type="type"
+        :placeholder="placeholder"
+        :FieldName="FieldName"
+        :maxlength="maxlength"
+        :class="[
+          'textbox-default',
+          subClass,
+          { 'border-red width-smaller': hasBorderRed },
+        ]"
+        :obligate="obligate"
+        :onlyHasNumber="onlyHasNumber"
+        ref="inputREF"
+        v-model="inputValue"
+        @input="onInput($event.target.value)"
+        @blur="onBlur($event.target.value)"
+      />
+      <RedPoint :hideRedPoint="hideRedPoint" />
+    </div>
   </div>
 </template>
 
 <script>
 import { mixin as clickaway } from "vue-clickaway";
 
-import ToolTip from "./BaseToolTip.vue";
+import RedPoint from "./BaseRedPoint.vue";
 import CommonFn from "../../common/common1";
 
 export default {
   mixins: [clickaway],
   name: "BaseInput",
   components: {
-    ToolTip,
+    RedPoint,
   },
 
   props: {
@@ -60,8 +66,8 @@ export default {
       inputValue: "",
       // Ẩn/hiện viền đỏ
       hasBorderRed: false,
-      // Ẩn/hiện tooltip
-      hideToolTip: true,
+      // Ẩn/hiện chấm than đỏ
+      hideRedPoint: true,
     };
   },
 
@@ -83,7 +89,7 @@ export default {
       // Nếu các ô bắt buộc nhập đã có dữ liệu thì bỏ viền đỏ
       if (inputValue != "" && me.obligate == "true") {
         me.hasBorderRed = false;
-        me.hideToolTip = true;
+        me.hideRedPoint = true;
       }
 
       // Nếu các ô chỉ chứa chữ số đúng định dạng rồi thì bỏ viền đỏ
@@ -92,7 +98,7 @@ export default {
         me.onlyHasNumber == "true"
       ) {
         me.hasBorderRed = false;
-        me.hideToolTip = true;
+        me.hideRedPoint = true;
       }
     },
 
@@ -105,39 +111,20 @@ export default {
       // Nếu các ô bắt buộc không đã có dữ liệu thì hiện viền đỏ và tooltip
       if (inputValue == "" && me.obligate == "true") {
         me.hasBorderRed = true;
-        me.hideToolTip = false;
+        me.hideRedPoint = false;
       }
 
+      if(inputValue != "" && me.FieldName == "ProductName"){
+        me.$emit("autoGenSKUCode");
+      }
       // Nếu các ô chỉ chứa chữ số đúng định dạng rồi thì bỏ viền đỏ
       if (
         !me.isNumber(CommonFn.formatNumber(inputValue)) &&
         me.onlyHasNumber == "true"
       ) {
         me.hasBorderRed = true;
-        me.hideToolTip = false;
+        me.hideRedPoint = false;
       }
-    },
-
-    /**
-     * Hàm kiểm tra bắt buộc nhập các dữ liệu bắt buộc
-     * Ngọc 8/8/2021
-     */
-    isRequired() {
-      let me = this,
-        val = me.$refs.inputREF.value;
-
-      if (me.obligate == "true" && val == "") {
-        // Thêm border đỏ
-        me.hasBorderRed = true;
-        // hiện tooltip
-        me.hideToolTip = false;
-
-        return false;
-      }
-      //bỏ boder đỏ
-      me.hasBorderRed = false;
-
-      return true;
     },
 
     /**
@@ -153,7 +140,7 @@ export default {
         //thêm border đỏ
         me.hasBorderRed = true;
         // hiện tooltip
-        me.hideToolTip = false;
+        me.hideRedPoint = false;
 
         return false;
       }
@@ -172,7 +159,7 @@ export default {
       // Bỏ boder đỏ
       me.hasBorderRed = false;
       // Ẩn tooltip
-      me.hideToolTip = true;
+      me.hideRedPoint = true;
     },
 
     /**
@@ -192,11 +179,11 @@ export default {
     },
   },
   watch: {
-    initValue: function() {
+    initValue: function () {
       this.inputValue = this.initValue;
     },
 
-    reFocus: function() {
+    reFocus: function () {
       if (this.autoFocus == "true") {
         this.$refs.inputREF.focus();
       }

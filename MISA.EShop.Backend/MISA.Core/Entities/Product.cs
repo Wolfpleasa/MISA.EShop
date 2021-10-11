@@ -57,6 +57,11 @@ namespace MISA.Core.Entities
         public string Color { get; set; }
 
         /// <summary>
+        /// Màu sắc
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
         /// Khóa ngoại 
         /// </summary>
         public Guid? ParentId { get; set; }
@@ -72,6 +77,11 @@ namespace MISA.Core.Entities
         public Guid? ProductGroupId { get; set; }
 
         /// <summary>
+        /// Ảnh hàng hóa
+        /// </summary>
+        public Guid? PictureId { get; set; }
+
+        /// <summary>
         /// List các hàng hóa chi tiết
         /// </summary>
         [MISANotMap]
@@ -82,6 +92,7 @@ namespace MISA.Core.Entities
         /// </summary>
         [MISANotMap("Cờ")]
         public int? FlagMode { get; set; }
+
         #endregion
     }
 }

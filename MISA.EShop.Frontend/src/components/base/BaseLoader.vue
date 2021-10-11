@@ -1,9 +1,6 @@
 <template>
-   <div :class="['gears' , {'d-none' : HideLoader}]">
-        <img src="../../assets/icon/biggear.png" alt="gear" class="big">
-
-        <img src="../../assets/icon/smallgear.png" alt="gear" class="small">
-        <h1>Chờ một chút...</h1> 
+   <div :class="['loader' , {'d-none' : hideLoader}]">
+       
     </div>
 </template>
 
@@ -12,7 +9,7 @@ export default {
   name: "BaseLoader",
 
   props: {
-    HideLoader: Boolean
+    hideLoader: Boolean
   },
 
   methods: {

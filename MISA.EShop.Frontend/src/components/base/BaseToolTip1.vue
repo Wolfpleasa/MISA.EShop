@@ -1,15 +1,16 @@
 <template>
   <div :class="['tooltip' ,{'d-none': hideToolTip}]">
-       
+    <div class="tooltip-text" v-html="toolTipText"></div>
   </div>
 </template>
 
 <script>
+
 export default {
   name: "BaseToolTip",
 
   props: {
-    ToolTipText: String,
+    toolTipText: String,
     hideToolTip: Boolean,
   },
 

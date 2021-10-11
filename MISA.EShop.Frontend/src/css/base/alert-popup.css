@@ -1,0 +1,107 @@
+.alert {
+    position: absolute;
+    height: auto;
+    width: 400px;
+    top: calc((100% - 282px) / 2);
+    left: calc((100% - 400px) / 2);
+    background-color: #fff;
+    box-shadow: 0 3px 6px 0 rgb(0, 0, 0, 0.16);
+    border-radius: 2px;
+    z-index: 15;
+}
+
+.alert .head {
+    width: 100%;
+    height: 36px;
+    padding: 10px 14px;
+    display: flex;
+    box-sizing: border-box;
+    justify-content: space-between;
+    background-color: #f0f0f0;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+}
+
+.alert .head .head-text {
+    height: 16px;
+    line-height: 16px;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.head .head-close {
+    right: 0;
+    width: 16px;
+    height: 16x;
+    background: url('../../assets/common-icon.png') no-repeat -1128px -128px;
+    cursor: pointer;
+}
+
+.alert .alert-message {
+    height: 36px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.alert .alert-icon {
+    height: 36px;
+    width: 36px;
+    margin: 0 20px 0 0px;
+}
+
+.alert .alert-close {
+    width: calc(100% - 12px);
+    height: 32px;
+    display: flex;
+    padding: 8px 6px;
+    align-items: center;
+    border-top: 1px solid #babec5;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+.alert .alert-text {
+    width: calc(100% - 76px);
+}
+
+.alert.message-red .button,
+.alert.message-green .button {
+    margin-left: 140px;
+}
+
+.alert.message-yellow .alert-close {
+    flex-direction: row-reverse;
+}
+
+.alert.message-yellow .button-icon {
+    right: 0;
+    height: 32px;
+    line-height: 32px;
+    width: 75px;
+    padding-left: 17px;
+    box-sizing: border-box;
+    border: 1px solid #5897ce;
+    border-radius: 3px;
+}
+
+.alert.message-red .alert-icon {
+    background: url('../../assets/img/Sprites.64af8f61.svg') no-repeat -752px -462px;
+}
+
+.alert.message-yellow .alert-icon {
+    background-image: url("../../assets/icon/notify.png");
+    background-repeat: no-repeat;
+    background-size: 41px 36px;
+    background-position: center;
+    width: 41px;
+}
+
+.alert.message-green .alert-icon {
+    background: url('../../assets/img/Sprites.64af8f61.svg') no-repeat -990px -462px;
+}
+
+
+/* .alert.message-blue .alert-icon {
+    background-image: url("../../assets/icon/alert-blue.png");
+} */

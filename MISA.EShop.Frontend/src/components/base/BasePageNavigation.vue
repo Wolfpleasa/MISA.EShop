@@ -2,47 +2,77 @@
   <div class="page-navigator">
     <!-- <div class="ml-10" id="div1-paging"></div> -->
     <div class="paging">
-      <div
-        class="btn common-page first-page"
-        @click="pageNumberOnClick('first-page')"
-      ></div>
-      <div
-        class="btn common-page prev-page"
-        @click="pageNumberOnClick('prev-page')"
-      ></div>
+      <div class="p-relative tt-field">
+        <div
+          :class="[
+            'btn common-page first-page',
+            { disable: currentPageNumber == 1 },
+          ]"
+          @click="pageNumberOnClick('first-page')"
+        ></div>
+        <ToolTip toolTipText="Trang đầu" :hideToolTip="hideToolTip" />
+      </div>
+
+      <div class="p-relative tt-field">
+        <div
+          :class="[
+            'btn common-page prev-page',
+            { disable: currentPageNumber == 1 },
+          ]"
+          @click="pageNumberOnClick('prev-page')"
+        ></div>
+
+        <ToolTip toolTipText="Trang trước" :hideToolTip="hideToolTip" />
+      </div>
+
       &nbsp;Trang&nbsp;&nbsp;
-      <div       
-        class="btn page-number"
-      >
+      <div class="btn page-number">
         {{ currentPageNumber }}
       </div>
-      &nbsp;trên {{totalPageNumber}}&nbsp;&nbsp;
-      <div
-        class="btn common-page next-page"
-        @click="pageNumberOnClick('next-page')"
-      ></div>
-      <div
-        class="btn common-page last-page"
-        @click="pageNumberOnClick('last-page')"
-      ></div>
-      <div
-        class="btn common-page reload"
-        @click="pageNumberOnClick('reload')"
-      ></div>
+      &nbsp;trên {{ totalPageNumber }}&nbsp;&nbsp;
+
+      <div class="p-relative tt-field">
+        <div
+          :class="[
+            'btn common-page next-page',
+            { disable: currentPageNumber == totalPageNumber },
+          ]"
+          @click="pageNumberOnClick('next-page')"
+        ></div>
+        <ToolTip toolTipText="Trang sau" :hideToolTip="hideToolTip" />
+      </div>
+
+      <div class="p-relative tt-field">
+        <div
+          :class="[
+            'btn common-page last-page',
+            { disable: currentPageNumber == totalPageNumber },
+          ]"
+          @click="pageNumberOnClick('last-page')"
+        ></div>
+        <ToolTip toolTipText="Trang cuối" :hideToolTip="hideToolTip" />
+      </div>
+
+      <div class="p-relative tt-field">
+        <div
+          class="btn common-page reload"
+          @click="pageNumberOnClick('reload')"
+        ></div>
+        <ToolTip toolTipText="Nạp" :hideToolTip="hideToolTip" />
+      </div>
+
       <div class="btn entity-perpage">
-        <div @click="showOption()" class = "d-flex">
-          <div class="">{{entityPerPage}}</div>
+        <div @click="showOption()" class="d-flex">
+          <div class="">{{ entityPerPage }}</div>
           <div class="arrow"></div>
         </div>
-        <div :class="['quantity-option', {'d-none': hideOption}]">
+        <div :class="['quantity-option', { 'd-none': hideOption }]">
           <div @click="chooseQuantity(15)" class="quantity-item">15</div>
           <div @click="chooseQuantity(25)" class="quantity-item">25</div>
           <div @click="chooseQuantity(50)" class="quantity-item">50</div>
           <div @click="chooseQuantity(100)" class="quantity-item">100</div>
         </div>
-        <div class="">
-
-        </div>
+        <div class=""></div>
       </div>
     </div>
     <div class="ml-10">
@@ -52,21 +82,31 @@
 </template>
 
 <script>
+import ToolTip from "../../components/base/BaseToolTip1.vue";
+
 export default {
   name: "BasePageNavigation",
+  components: {
+    ToolTip,
+  },
+
   props: {
     totalEntity: Number,
     totalPageNumber: Number,
     searchContent: String,
     realEntityPerPage: Number,
+    entityPerPage: {
+      type: Number,
+      default: 50,
+    },
   },
 
   data() {
     return {
       // Trang hiện tại
       currentPageNumber: 1,
-      entityPerPage: 50,
       hideOption: true,
+      hideToolTip: true,
     };
   },
 
@@ -75,17 +115,18 @@ export default {
      * Hàm mở chọn pageSize
      * Created By: Ngọc 27/09/2021
      */
-    showOption(){
+    showOption() {
       this.hideOption = !this.hideOption;
     },
 
-     /**
+    /**
      * Hàm chọn số lượng bản ghi trên 1 trang
      * Created By: Ngọc 27/09/2021
      */
-    chooseQuantity(entityPerPage){
-      this.entityPerPage = entityPerPage;
-       this.hideOption = true;
+    chooseQuantity(entityPerPage) {
+      this.$emit("chooseQuantity", entityPerPage);
+      this.hideOption = true;
+      this.updatePage();
     },
 
     /**
@@ -109,40 +150,8 @@ export default {
           me.currentPageNumber = me.totalPageNumber;
           break;
         default:
-          me.currentPageNumber = btnPage;
           break;
       }
-      me.updatePage();
-    },
-
-    /**
-     * Hàm cập nhật trang đang được xem
-     * Ngọc 12/8/2021
-     */
-    updateCenterNumber() {
-      let me = this;
-      me.currentPageNumber = Math.min(me.currentPageNumber, me.totalPageNumber);
-      me.lowerLimit = me.upperLimit = me.currentPageNumber;
-      for (var b = 1; b < me.totalShow && b < me.totalPageNumber; ) {
-        if (me.lowerLimit > 1) {
-          me.lowerLimit--;
-          b++;
-        }
-        if (b < me.totalShow && me.upperLimit < me.totalPageNumber) {
-          me.upperLimit++;
-          b++;
-        }
-      }
-    },
-
-    /**
-     * Hàm tăng/giảm số lượng thực thể theo trang
-     * Ngọc 12/8/2021
-     */
-    modifyNumber(modifyStatus) {
-      let me = this;
-      me.$emit("modifyNumber", modifyStatus);
-
       me.updatePage();
     },
 
@@ -153,12 +162,11 @@ export default {
     updatePage() {
       let me = this;
       me.$emit("updatePage", me.currentPageNumber);
-      me.updateCenterNumber();
     },
   },
 
   created() {
-    //this.updatePage();
+    this.updatePage();
   },
 
   watch: {
@@ -167,7 +175,8 @@ export default {
     },
 
     totalPageNumber: function () {
-      this.updatePage();
+      let me = this;
+      me.currentPageNumber = Math.min(me.currentPageNumber, me.totalPageNumber);
     },
 
     totalEntity: function () {

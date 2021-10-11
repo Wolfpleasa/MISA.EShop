@@ -118,36 +118,33 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Cannot_Delete_All" xml:space="preserve">
-    <value>Có bản ghi bị lỗi, không thể thực hiện xóa hàng loạt</value>
+    <value>Có bản ghi bị lỗi, không thể thực hiện xóa hàng loạt.</value>
   </data>
   <data name="Contain_Numbers_Only" xml:space="preserve">
-    <value>Thông tin {0} chỉ chứa chữ số</value>
+    <value>Thông tin {0} chỉ chứa chữ số.</value>
   </data>
   <data name="Duplicate_Code" xml:space="preserve">
-    <value>Mã nhập vào đã bị trùng</value>
+    <value>Mã nhập vào đã bị trùng.</value>
+  </data>
+  <data name="Duplicate_ProductCode" xml:space="preserve">
+    <value>Mã vạch {0} đã có trong hệ thống. Vui lòng kiểm tra lại</value>
   </data>
   <data name="Duplicate_ProductGroupName" xml:space="preserve">
-    <value>Nhóm hàng hóa &lt;{0}&gt; đã có trong hệ thống</value>
+    <value>Nhóm hàng hóa {0} đã có trong hệ thống. Vui lòng kiểm tra lại</value>
+  </data>
+  <data name="Duplicate_SKUCode" xml:space="preserve">
+    <value>Mã SKU {0} đã có trong hệ thống. Vui lòng kiểm tra lại</value>
   </data>
   <data name="Duplicate_UnitName" xml:space="preserve">
-    <value>Đơn vị tính &lt;{0}&gt; đã có trong hệ thống</value>
-  </data>
-  <data name="EmployeeCode" xml:space="preserve">
-    <value>Vui lòng nhập mã nhân viên theo định dạng NV-XXX</value>
-  </data>
-  <data name="Empty_EmployeeCode" xml:space="preserve">
-    <value>Mã nhân viên không được phép để trống</value>
+    <value>Đơn vị tính {0} đã có trong hệ thống. Vui lòng kiểm tra lại</value>
   </data>
   <data name="Empty_Field" xml:space="preserve">
-    <value>Thông tin {0} không được phép để trống</value>
+    <value>Thông tin {0} không được phép để trống.</value>
   </data>
   <data name="Error_Message_UserVN" xml:space="preserve">
-    <value>Có lỗi xảy ra! Vui lòng liên hệ MISA</value>
-  </data>
-  <data name="Error_PhoneNumber" xml:space="preserve">
-    <value>Số điện thoại không đúng định dạng</value>
+    <value>Có lỗi xảy ra! Vui lòng liên hệ MISA.</value>
   </data>
   <data name="Form_File_IsNot_Null" xml:space="preserve">
-    <value>Vui lòng chọn 1 tệp excel rồi tiếp tục</value>
+    <value>Vui lòng chọn 1 tệp excel rồi tiếp tục.</value>
   </data>
 </root>

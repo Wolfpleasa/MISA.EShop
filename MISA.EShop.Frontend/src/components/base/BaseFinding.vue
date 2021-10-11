@@ -1,6 +1,6 @@
 <template>
   <div class="finding" ref="myOperator">
-    <div class="operator" @click="operatorOnClick">{{ inputOperator }}</div>
+    <div class="operator" @click="operatorOnClick">{{ value }}</div>
   </div>
 </template>
 
@@ -10,10 +10,9 @@ export default {
   components: {},
 
   props: {
-    filterField:String,
-    inputOperator:{
-      type: String,
-      default: '*',
+    filterField: String,
+    inputOperator: {
+      type: Number,
     },
   },
   data() {
@@ -21,33 +20,52 @@ export default {
       items: [],
       currentId: 0,
       currentIndex: 0,
+      value: ""
     };
   },
 
   methods: {
-    /**
-     * Sự kiện chọn 1 toán tử
-     * Created By: Ngọc 26/09/2021
-     */
-    setValue() {
-
-    },
-
     /**
      * Hàm bắt sự kiện bấm vào ô chọn
      * Created By: Ngọc 26/09/2021
      */
     operatorOnClick() {
       let left = this.$refs.myOperator.getBoundingClientRect().left;
-      this.$emit("operatorOnClick", "OperatorName", this.filterField,  left);
+      this.$emit("operatorOnClick", "OperatorName", this.filterField, left);
     },
+
+    /**
+     * Hàm hiển thị dữ liệu cho ô chọn toán tử
+     * Created By: Ngọc 26/09/2021
+     */
+    displayOperator(){
+      switch (this.inputOperator) {
+        case 0:
+          this.value = "*";
+          break;
+        case 1:
+          this.value = "=";
+          break;
+        case 2:
+          this.value = "+";
+          break;
+        case 3:
+          this.value = "-";
+          break;
+        case 4:
+          this.value = "!";
+          break;
+      }
+    }
   },
   created() {
-    this.setValue(this.index);
+    this.displayOperator();
   },
 
   watch: {
-  
+    inputOperator: function () {
+     this.displayOperator();
+    },
   },
 };
 </script>

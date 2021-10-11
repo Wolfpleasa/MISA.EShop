@@ -1,6 +1,6 @@
 <template>
   <div class="finding" ref="myOperator">
-    <div class="operator" @click="operatorOnClick">{{ inputOperator }}</div>
+    <div class="operator" @click="operatorOnClick">{{ value }}</div>
   </div>
 </template>
 
@@ -12,13 +12,12 @@ export default {
   props: {
     filterField:String,
     inputOperator:{
-      type: String,
-      default: '=',
+      type: Number,
     },
   },
   data() {
     return {
-      
+      value: "=",
     };
   },
 
@@ -28,14 +27,43 @@ export default {
      * Created By: Ngọc 26/09/2021
      */
     operatorOnClick() {
- 
       let left = this.$refs.myOperator.getBoundingClientRect().left;
       this.$emit("operatorOnClick", "FilterPriceName", this.filterField,  left);
     },
+
+    /**
+     * Hàm hiển thị dữ liệu cho ô chọn toán tử
+     * Created By: Ngọc 26/09/2021
+     */
+    displayOperator(){
+      switch (this.inputOperator) {
+        case 0:
+          this.value = "=";
+          break;
+        case 1:
+          this.value = "<";
+          break;
+        case 2:
+          this.value = "≤";
+          break;
+        case 3:
+          this.value = ">";
+          break;
+        case 4:
+          this.value = "≥";
+          break;
+      }
+    }
   },  
 
   watch: {
-  
+     inputOperator: function () {
+      this.displayOperator();
+    },
+  },
+
+  created() {
+    this.displayOperator();
   },
 };
 </script>

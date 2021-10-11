@@ -5,20 +5,27 @@
     :formMode="formMode"
     Item="ProductCode"
     :class="['z-index-2', { 'd-none': dnone }]"
+    @keydown="keyDownOnClick($event)"
   >
     <div class="save-or-cancel">
-      <ButtonIcon
-        iconName="icon-save"
-        buttonText="Lưu"
-        subClass="save"
-        @btn-click="btnSaveOnClick"
-      />
-      <ButtonIcon
-        iconName="icon-cancel"
-        buttonText="Hủy bỏ"
-        subClass="cancel"
-        @btn-click="btnDialogCancelOnClick"
-      />
+      <div class="p-relative tt-field">
+        <ButtonIcon
+          iconName="icon-save"
+          buttonText="Lưu"
+          subClass="save"
+          @btn-click="btnSaveOnClick"
+        />
+        <ToolTip toolTipText="Ctrl + S" :hideToolTip="hideToolTip" />
+      </div>
+      <div class="p-relative tt-field">
+        <ButtonIcon
+          iconName="icon-cancel"
+          buttonText="Hủy bỏ"
+          subClass="cancel"
+          @btn-click="btnDialogCancelOnClick"
+        />
+        <ToolTip toolTipText="Hủy (Esc)" :hideToolTip="hideToolTip" />
+      </div>
     </div>
 
     <div class="main">
@@ -48,6 +55,7 @@
           autoFocus="true"
           v-model="product.ProductName"
           :initValue="product.ProductName"
+          @autoGenSKUCode="autoGenSKUCode"
         />
 
         <ComboBox
@@ -144,6 +152,7 @@
           labelText="Chi tiết thuộc tính"
           :products="product.ProductDetails"
           :productName="product.ProductName"
+          :skuCode="product.SKUCode"
           @deleteAttribute="deleteAttribute"
         />
       </div>
@@ -162,38 +171,41 @@
           :initValue="product.Description"
         />
 
-        <Picture labelText="Ảnh hàng hóa" />
+        <Picture
+          labelText="Ảnh hàng hóa"
+          @chooseFile="chooseFile"
+          :pictureId="product.PictureId"
+        />
       </div>
     </div>
 
-    <div class="save-or-cancel">
-      <ButtonIcon
-        iconName="icon-save"
-        buttonText="Lưu"
-        subClass="save"
-        @btn-click="btnSaveOnClick"
-      />
-      <ButtonIcon
-        iconName="icon-cancel"
-        buttonText="Hủy bỏ"
-        subClass="cancel"
-        @btn-click="btnDialogCancelOnClick"
-      />
+      <div class="save-or-cancel">
+      <div class="p-relative tt-field">
+        <ButtonIcon
+          iconName="icon-save"
+          buttonText="Lưu"
+          subClass="save"
+          @btn-click="btnSaveOnClick"
+        />
+        <ToolTip toolTipText="Ctrl + S" :hideToolTip="hideToolTip" />
+      </div>
+      <div class="p-relative tt-field">
+        <ButtonIcon
+          iconName="icon-cancel"
+          buttonText="Hủy bỏ"
+          subClass="cancel"
+          @btn-click="btnDialogCancelOnClick"
+        />
+        <ToolTip toolTipText="Hủy (Esc)" :hideToolTip="hideToolTip" />
+      </div>
     </div>
-
-    <Popup
-      :dnone="hidePopup"
-      :property="property"
-      @closePopupInfo="closePopupInfo"
-      @getIdForCombobox="getIdForCombobox"
-    />
-    <!-- của loader chỉ làm mờ bên trong form detail -->
-    <!-- <div :class="['pageCover z-index-1', { 'd-none': HideLoader }]"></div> -->
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import { eventBus } from "../../main.js";
+
 import CommonFn from "../../common/common1.js";
 import Constant from "../../common/constant1.js";
 import Enumeration from "../../common/enumeration.js";
@@ -206,7 +218,8 @@ import CheckBox from "../../components/base/BaseCheckBox.vue";
 import Attribute from "../../components/base/BaseAttribute.vue";
 import AttributeDetail from "../../components/base/BaseAttributeDetail.vue";
 import Picture from "../../components/base/BasePicture.vue";
-import Popup from "../../components/base/BasePopup.vue";
+import ToolTip from "../../components/base/BaseToolTip1.vue";
+import ResourceVN from "../../common/resourceVN.js";
 
 export default {
   name: "ProductDetail",
@@ -219,7 +232,7 @@ export default {
     Attribute,
     AttributeDetail,
     Picture,
-    Popup,
+    ToolTip,
   },
 
   props: {
@@ -230,7 +243,7 @@ export default {
     },
     productId: {
       type: String,
-      default: "",
+      default: null,
       require: true,
     },
     formMode: Number,
@@ -244,32 +257,41 @@ export default {
       products: [],
       productDefault: [],
       productName: "",
+      skuCode: "",
       colors: [],
       color: "",
 
       //---------------Popup thêm thông tin-----------------//
       hidePopup: true,
       property: "",
-
       defaultName: "",
       initValue: "",
       reFocus: false,
       check: true,
-      // list chứa thuộc tính(màu sắc) sản phẩm
+
+      // Picture
+      formFile: null,
+
+      //sự kiên thao tác bằng tổ hợp phím
+      pressCtrl: false,
+      pressShift: false,
+      pressKeyS: false,
+
+      //tooltip
+      hideToolTip: true,
     };
   },
 
   watch: {
     formMode: function () {
       let me = this;
-      if (me.formMode == 0) {
+      if (me.formMode == Enumeration.FormMode.Add) {
         me.resetFormDetail();
         this.colors = [];
         this.products = [];
-        this.productId = "";
         this.productDefault = [];
       }
-      if (me.formMode == 1) {
+      if (me.formMode == Enumeration.FormMode.Edit) {
         me.resetFormDetail();
         axios
           .get(`${Constant.LocalUrl}/Products/detail/${me.productId}`)
@@ -282,13 +304,77 @@ export default {
             console.log(err);
           });
       }
+      if (me.formMode == Enumeration.FormMode.Duplicate) {
+        me.resetFormDetail();
+        axios
+          .get(`${Constant.LocalUrl}/Products/detail/${me.productId}`)
+          .then((res) => {
+            me.product = res.data;
+            me.productDefault = [...me.product.ProductDetails];
+            me.bindingData();
+            //me.product.SKUCode = ;
+            console.log(me.product.SKUCode);
+            me.$set(
+              me.product,
+              "SKUCode",
+              CommonFn.increaseSKUCode(
+                me.product.ProductName,
+                me.product.SKUCode
+              )
+            );
+            console.log(
+              CommonFn.increaseSKUCode(
+                me.product.ProductName,
+                me.product.SKUCode
+              )
+            );
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     },
+
     dnone: function () {
       this.reFocus = !this.reFocus;
     },
   },
 
   methods: {
+    /**
+     * Hàm chọn file ảnh từ component Picture gửi lên
+     * Created By: Ngọc 05/10/2021
+     */
+    chooseFile(file) {
+      let me = this;
+      me.formFile = file;
+      if (file == null) {
+        me.product.PictureId = ResourceVN.DEFAULT_PICTUREID;
+      } else {
+        me.product.PictureId = null;
+      }
+    },
+
+    /**
+     * Hàm lấy mã SKU tự động
+     * Created By: Ngọc 04/10/2021
+     */
+    autoGenSKUCode() {
+      let me = this;
+      let productName = {};
+      productName.ProductName = me.product.ProductName;
+      if (me.product.SKUCode == null || me.product.SKUCode == "") {
+        axios
+          .post(`${Constant.LocalUrl}/Products/getNewCode`, productName)
+          .then((res) => {
+            this.$set(me.product, "SKUCode", res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    },
+
     /**
      * Hàm hiển thị tên cho combobox sau khi thêm thuộc tính
      * Created By: Ngọc 01/10/2021
@@ -299,19 +385,9 @@ export default {
         this.product[itemId] = idValue;
         this.selectedId = this.product[itemId];
         this.defaultName = name;
-        this.closePopupInfo();
       } catch (err) {
         console.log(err);
       }
-    },
-
-    /**
-     * Hàm đóng form thêm thông tin đơn vị, nhóm hh
-     * Created By: Ngọc 01/10/2021
-     */
-    closePopupInfo() {
-      this.hidePopup = true;
-      this.property = "";
     },
 
     /**
@@ -319,8 +395,8 @@ export default {
      * Created By: Ngọc 01/10/2021
      */
     addInfomation(hidePopup, fieldName) {
-      this.hidePopup = hidePopup;
       this.property = fieldName;
+      this.$emit("hidePopupInfo", hidePopup, fieldName);
     },
 
     /**
@@ -368,19 +444,26 @@ export default {
     addProduct() {
       let me = this;
       me.formatData();
-
+      let formData = new FormData();
+      formData.append("formFile", me.formFile);
+      formData.append("data", JSON.stringify(me.product));
       axios
-        .post(`${Constant.LocalUrl}/Products`, this.product)
+        .post(`${Constant.LocalUrl}/Products`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then(() => {
-          me.$emit(
-            "callToastMessage",
-            "Thêm dữ liệu thành công",
-            "message-green"
-          );
           me.$emit("resetAfterSaveData");
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          console.log(error);
+          me.$emit(
+            "callAlertPopup",
+            `${error.response.data.userMsg}`,
+            `${Enumeration.Message.Notify}`,
+            `${error.response.data.dataErr}`
+          );
         });
     },
 
@@ -392,18 +475,25 @@ export default {
       let me = this;
       me.addFlag(me.productDefault, me.product.ProductDetails);
       me.formatData();
+      let formData = new FormData();
+      formData.append("formFile", me.formFile);
+      formData.append("data", JSON.stringify(me.product));
       axios
-        .put(`${Constant.LocalUrl}/Products/${me.productId}`, me.product)
+        .put(`${Constant.LocalUrl}/Products/${me.productId}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then(() => {
-          me.$emit(
-            "callToastMessage",
-            "Sửa dữ liệu thành công",
-            "message-green"
-          );
           me.$emit("resetAfterSaveData");
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          me.$emit(
+            "callAlertPopup",
+            `${error.response.data.userMsg}`,
+            `${Enumeration.Message.Notify}`,
+            `${error.response.data.dataErr}`
+          );
         });
     },
 
@@ -506,8 +596,13 @@ export default {
         // tạo product child
         let productDetail = {};
         productDetail.Color = color;
-        productDetail.ProductName = `${this.product.ProductName}/${color}`;
-        if (this.productId != "") {
+        let colorArr = color.split(" ");
+        colorArr = colorArr.map((c) =>
+          CommonFn.removeVietnameseTones(c.charAt(0))
+        );
+        productDetail.ProductName = `${this.product.ProductName} (${color})`;
+        productDetail.SKUCode = `${this.product.SKUCode}-${colorArr.join("")}`;
+        if (this.formMode != Enumeration.FormMode.Add) {
           productDetail.ParentId = this.productId;
         }
         // thêm vào mảng product.ProductDetails
@@ -518,6 +613,21 @@ export default {
           ]);
         } else {
           this.$set(this.product, "ProductDetails", [productDetail]);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    /**
+     * Hàm bắt sự kiện thao tác với phím
+     * Created By: Ngọc 08/10/2021
+     */
+    keyDownOnClick(e) {
+      try {
+        if (e.code == "Escape") {
+          e.preventDefault();
+          this.btnDialogCancelOnClick();
         }
       } catch (err) {
         console.log(err);
@@ -549,7 +659,9 @@ export default {
       newEntity.Display = Enumeration.Display.Yes;
       newEntity.ProductGroupId = "";
       newEntity.UnitId = "";
+      newEntity.PictureId = "";
       this.product = newEntity;
+      this.formFile = null;
       // gọi hàm lấy mã hàng hóa mới
       //this.getNewCode();
       // bỏ các tooltip cảnh báo nếu đang lỗi
@@ -558,7 +670,7 @@ export default {
 
     /**
      * Hàm loại bỏ các tooltip cảnh báo
-     * Ngọc 10/8/2021
+     * Created By: Ngọc 28/09/2021
      */
     removeError() {
       let me = this;
@@ -569,7 +681,7 @@ export default {
 
     /**
      * Hàm đóng formDetail
-     * Ngọc 29/07/2021
+     * Created By: Ngọc 22/09/2021
      */
     btnDialogCancelOnClick() {
       let me = this;
@@ -585,11 +697,14 @@ export default {
 
       if (me.validateForm()) {
         if (me.formMode == Enumeration.FormMode.Add) {
+          if (this.formFile == null) {
+            me.product.PictureId = ResourceVN.DEFAULT_PICTUREID;
+          }
           me.addProduct();
         } else if (me.formMode == Enumeration.FormMode.Edit) {
           me.editProduct();
-        } else {
-          me.duplicateProduct();
+        } else if (me.formMode == Enumeration.FormMode.Duplicate) {
+          me.addProduct();
         }
       }
     },
@@ -639,19 +754,15 @@ export default {
       let me = this;
       let isValid = true;
 
-      for (let [key] of Object.entries(me.$refs)) {
-        if (key.includes("required")) {
-          let valRes = me.$refs[key].isRequired();
+      if (me.product.ProductName == "" || me.product.ProductName == null) {
+        me.$emit(
+          "callAlertPopup",
+          "Không được để trống các trường bắt buộc",
+          Enumeration.Message.Notify,
+          me.product.ProductName
+        );
 
-          if (valRes == false) {
-            me.$emit(
-              "callToastMessage",
-              "Không được để trống các trường bắt buộc",
-              "message-red"
-            );
-            isValid = false;
-          }
-        }
+        isValid = false;
       }
 
       return isValid;
@@ -683,6 +794,42 @@ export default {
     chooseRadioItem(itemID, itemValue) {
       this.product[itemID] = itemValue;
     },
+  },
+
+  created() {
+    eventBus.$on("getIdForCombobox", (idValue, name) => {
+      this.getIdForCombobox(idValue, name);
+    });
+  },
+
+  mounted() {
+    let me = this;
+    document.addEventListener("keydown", (e) => {
+      switch (e.key) {
+        case "Control":
+          me.pressCtrl = true;
+          break;
+        case "s":
+          me.pressKeyS = true;
+          break;
+      }
+      if (me.pressCtrl && me.pressKeyS) {
+        //document.querySelector("#btn").click();
+        me.btnSaveOnClick();
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      switch (e.key) {
+        case "Control":
+          me.pressCtrl = false;
+          break;
+        case "s":
+          me.pressKeyS = false;
+          break;
+      }
+    });
   },
 };
 </script>

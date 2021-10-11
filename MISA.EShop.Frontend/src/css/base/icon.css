@@ -5,6 +5,13 @@
     margin: 13px 8px;
 }
 
+.disable .icon-duplicate {
+    background: url('../../assets/common-icon.png') no-repeat -54px -179px;
+    width: 11px;
+    height: 12px;
+    margin: 12px 8px;
+}
+
 .icon-duplicate {
     background: url('../../assets/common-icon.png') no-repeat -54px -204px;
     width: 11px;
@@ -12,9 +19,23 @@
     margin: 12px 8px;
 }
 
+.disable .icon-edit {
+    background: url('../../assets/common-icon.png') no-repeat -79px -180px;
+    width: 12px;
+    height: 12px;
+    margin: 12px 8px;
+}
+
 .icon-edit {
     background: url('../../assets/common-icon.png') no-repeat -79px -205px;
     width: 12px;
+    height: 12px;
+    margin: 12px 8px;
+}
+
+.disable .icon-delete {
+    background: url('../../assets/common-icon.png') no-repeat -105px -180px;
+    width: 10px;
     height: 12px;
     margin: 12px 8px;
 }

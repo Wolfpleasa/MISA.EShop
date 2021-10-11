@@ -28,21 +28,21 @@ namespace MISA.Core.Interfaces.Repository
         /// </summary>
         /// <returns></returns>
         /// Created By: Ngọc 25/09/2021
-        IEnumerable<Product> Add(Product product);
+        int Add(Product product, Picture picture);
 
         /// <summary>
         /// Hàm sửa hàng hóa
         /// </summary>
         /// <returns></returns>
         /// Created By: Ngọc 25/09/2021
-        IEnumerable<Product> Edit(Product product, Guid ProductId);
+        int Edit(Product product, Guid ProductId, Picture picture);
 
         /// <summary>
         /// Hàm xóa hàng hóa
         /// </summary>
         /// <returns></returns>
         /// Created By: Ngọc 25/09/2021
-        IEnumerable<Product> Delete(Guid ProductId);
+        int Delete(Guid ProductId);
 
         /// <summary>
         /// Hàm phân trang, tìm kiếm
@@ -57,5 +57,28 @@ namespace MISA.Core.Interfaces.Repository
         /// <returns>hàng hóa</returns>
         /// Created By: Ngọc 01/10/2021
         Product GetProductWithDetail(Guid productId);
+
+        /// <summary>
+        /// Hàm check trùng mã vạch
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="SKUCode"></param>
+        /// <returns></returns>
+        bool CheckCodeExist(Guid productId, string SKUCode);
+
+        /// <summary>
+        /// Hàm check trùng mã SKU
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="productCode"></param>
+        /// <returns></returns>
+        bool ValidateCode(Guid productId, string productCode);
+
+        /// <summary>
+        /// Hàm sinh mã SKU tự động
+        /// </summary>
+        /// <param name="productName"></param>
+        /// <returns></returns>
+        string AutoGenSKUCode(string productName);
     }
 }

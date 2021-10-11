@@ -1,31 +1,28 @@
 <template>
   <div class="filter-option" ref="myComboBox">
-      <input
-        class="inp"
-        @input="onInput()"
-        v-model = "inputValue"
-      />
-      <div class="select-arrow" @click="selectOnClick">
-        <div class="arrow"></div>
-      </div>
+    <input class="inp" @input="onInput()" v-model="value" />
+    <div class="select-arrow" @click="selectOnClick">
+      <div class="arrow"></div>
+    </div>
   </div>
 </template>
 
 <script>
+import CommonFn from "../../common/common1";
+//import Enumeration from '../../common/enumeration';
 export default {
-  name: "BaseFilterPrice",
+  name: "BaseFilterOption",
   components: {},
 
   props: {
-    filterField:String,
-    inputValue:{
-      type: String,
-      default: 'Tất cả',
+    filterField: String,
+    inputValue: {
+      type: Number,
     },
   },
   data() {
     return {
-      
+      value: "Tất cả"
     };
   },
 
@@ -39,10 +36,20 @@ export default {
       let left = this.$refs.myComboBox.getBoundingClientRect().left;
       this.$emit("selectOnClick", this.filterField, left, width);
     },
-  },  
+
+    setValue() {
+      this.value = CommonFn.getValueEnum(this.inputValue, this.filterField);
+    },
+  },
 
   watch: {
-  
+    inputValue: function () {
+      this.setValue();
+    },
+  },
+
+  created() {
+    this.setValue();
   },
 };
 </script>

@@ -4,10 +4,9 @@
     <div :class="{ 'd-none': !labelText }">
       {{ labelText }}
     </div>
-    <ToolTip :hideToolTip="hideToolTip" :toolTipText="toolTipText" />
 
     <div
-      :class="['combo-box-select mt-4', { notValid: hasNotValid }]"
+      class="combo-box-select mt-4"
       v-on:keydown="keydownOnSelect($event)"
       v-on:keyup.enter="chooseComboBoxItemByKey()"
       ref="myComboBox"
@@ -53,14 +52,13 @@
 import axios from "axios";
 import { mixin as clickaway } from "vue-clickaway";
 
-import ToolTip from "./BaseToolTip.vue";
 import Constant from "../../common/constant1.js";
 export default {
   mixins: [clickaway],
   name: "BaseComboBox",
 
   components: {
-    ToolTip,
+ 
   },
 
   props: {
@@ -94,7 +92,7 @@ export default {
       // border đỏ
       hasNotValid: false,
       //hiện/ẩn tooltip
-      hideToolTip: true,
+      hideRedPoint: true,
       //nội dung tooltip
       toolTipText: "",
     };
@@ -147,7 +145,7 @@ export default {
       try {
         let me = this;
         me.hasNotValid = false;
-        me.hideToolTip = true;
+        me.hideRedPoint = true;
         this.rotate = true;
         this.dnone = false;
         this.active = true;
@@ -219,7 +217,7 @@ export default {
       try {
         let me = this;
         me.hasNotValid = false;
-        me.hideToolTip = true;
+        me.hideRedPoint = true;
         me.$refs.myInput.focus();
         me.currentIndex = index;
         me.currentId = itemValue;

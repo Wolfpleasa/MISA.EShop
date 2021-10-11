@@ -33,37 +33,65 @@
     width: 48px;
 }
 
-.common-page {
+.common-page,
+.page-number {
     background-repeat: no-repeat;
     background-position: center;
     border-radius: 3px;
 }
 
 .first-page {
+    background: url('../../assets/common-icon.png') no-repeat -649px -124px;
+    border: 1px solid #6b6f9d;
+}
+
+.first-page.disable {
     background: url('../../assets/common-icon.png') no-repeat -649px -149px;
 }
 
 .prev-page {
+    background: url('../../assets/common-icon.png') no-repeat -700px -124px;
+    border: 1px solid #6b6f9d;
+}
+
+.prev-page.disable {
     background: url('../../assets/common-icon.png') no-repeat -700px -149px;
 }
 
 .next-page {
+    background: url('../../assets/common-icon.png') no-repeat -750px -124px;
+    border: 1px solid #6b6f9d;
+}
+
+.next-page.disable {
     background: url('../../assets/common-icon.png') no-repeat -750px -149px;
 }
 
 .last-page {
+    background: url('../../assets/common-icon.png') no-repeat -799px -124px;
+    border: 1px solid #6b6f9d;
+}
+
+.last-page.disable {
     background: url('../../assets/common-icon.png') no-repeat -799px -149px;
 }
 
 .reload {
-    background: url('../../assets/common-icon.png') no-repeat -849px -148px;
+    background: url('../../assets/common-icon.png') no-repeat -849px -124px;
+    border: 1px solid #6b6f9d;
+}
+
+.disable {
+    cursor: default!important;
+    pointer-events: none;
+    border: 1px solid #d0d0d0;
 }
 
 .prev-page:hover,
 .first-page:hover,
 .next-page:hover,
 .last-page:hover {
-    border-color: #fff;
+    box-shadow: 0 3px 6px 0 rgb(107, 111, 157, 0.16);
     background-color: #fff;
 }
 

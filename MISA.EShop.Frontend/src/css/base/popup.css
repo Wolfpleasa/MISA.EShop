@@ -7,7 +7,7 @@
     background-color: #fff;
     border-radius: 4px;
     box-shadow: 0px 0px 5px 1px #ccc;
-    z-index: 12;
+    z-index: 12px;
 }
 
 .popup .head {
@@ -38,32 +38,47 @@
 .popup .middle {
     display: flex;
     padding: 10px;
+    height: 192px;
 }
 
-.popup .middle {
+.popup .middle.unit {
     display: flex;
     padding: 10px;
-    overflow: hidden;
+    height: 147px;
 }
 
 .popup .middle .eshop-inp {
     width: 462px;
 }
 
-.popup .middle .eshop-inp.description .textbox-default {
+.popup .middle .eshop-inp.description .input-tooltip {
     height: 80px;
-    width: 280px;
     vertical-align: top;
 }
 
-.popup .middle .eshop-inp .textbox-default {
+.popup .middle .eshop-inp .input-tooltip {
+    display: flex;
     height: 35px;
+    width: 300px;
+}
+
+.textbox-default {
+    height: 100%;
     border: 1px solid #c3c3c3;
     padding: 5px 10px;
-    width: 280px;
+    width: 100%;
     outline: none;
     border-radius: 3px;
     box-sizing: border-box;
+}
+
+.popup .middle .textbox-default:hover {
+    cursor: pointer;
+    border-color: #636dde;
+}
+
+.popup .middle .textbox-default:focus {
+    border-color: #636dde;
 }
 
 .popup .foot {

@@ -36,7 +36,7 @@ namespace MISA.Infrastructure.Repository
         /// <param name="unit"></param>
         /// <returns></returns>
         /// Created By: Ngọc 25/09/2021
-        public IEnumerable<Unit> Add(Unit unit)
+        public int Add(Unit unit)
         {
             try
             {
@@ -57,13 +57,13 @@ namespace MISA.Infrastructure.Repository
 
                     dynamicParam.Add($"${propName}", propValue);
                 }
-                var rowEffects = _dbConnection.Query<Product>("Proc_InsertUnit", param: dynamicParam, commandType: CommandType.StoredProcedure);
-                return (IEnumerable<Unit>)rowEffects;
+                var rowEffects = _dbConnection.Execute("Proc_InsertUnit", param: dynamicParam, commandType: CommandType.StoredProcedure);
+                return rowEffects;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return null;
+                return 0;
             }
         }
 
@@ -81,14 +81,14 @@ namespace MISA.Infrastructure.Repository
             }
         }
 
-        public IEnumerable<Unit> GetUnitByName(string unitName)
+        public Unit GetUnitByName(string unitName)
         {
             {
                 try
                 {               
                     var dynamicParam = new DynamicParameters();
                     dynamicParam.Add("$UnitName", unitName);
-                    var unit = _dbConnection.Query<Unit>("Proc_GetUnitByName", param: dynamicParam, commandType: CommandType.StoredProcedure);                
+                    var unit = _dbConnection.QueryFirstOrDefault<Unit>("Proc_GetUnitByName", param: dynamicParam, commandType: CommandType.StoredProcedure);                
                     return unit;
                 }
                 catch (Exception ex)
@@ -104,7 +104,7 @@ namespace MISA.Infrastructure.Repository
             try
             {
                 var unit = GetUnitByName(unitName);
-                if (unit.Count() > 0)
+                if (unit != null)
                 {
                     return false;
                 }

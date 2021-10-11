@@ -6,7 +6,9 @@
           :itemName="itemName"
           :left="left"
           :width="width"
+          :count="count"
           @chooseDropdownItem="chooseDropdownItem"
+          @resetPos="resetPos"
         />
         <thead>
           <tr>
@@ -18,13 +20,14 @@
                   @operatorOnClick="operatorOnClick"
                   filterField="SKUCode"
                   :inputOperator="
-                    filterParam.SKUCode ? filterParam.SKUCode.value : ''
+                    filterParam.SKUCode ? filterParam.SKUCode.OperatorIndex : ''
                   "
                 />
                 <input
                   class="input-filter"
                   type="text"
-                  v-model="filterParam.SKUCode.valueFinding"
+                  v-model="filterParam.SKUCode.Value"
+                  @input="startFinding"
                 />
               </div>
             </th>
@@ -36,14 +39,15 @@
                   filterField="ProductName"
                   :inputOperator="
                     filterParam.ProductName
-                      ? filterParam.ProductName.value
+                      ? filterParam.ProductName.OperatorIndex
                       : '*'
                   "
                 />
                 <input
                   class="input-filter"
                   type="text"
-                  v-model="filterParam.ProductName.valueFinding"
+                  v-model="filterParam.ProductName.Value"
+                  @input="startFinding"
                 />
               </div>
             </th>
@@ -55,14 +59,15 @@
                   filterField="ProductGroupName"
                   :inputOperator="
                     filterParam.ProductGroupName
-                      ? filterParam.ProductGroupName.value
+                      ? filterParam.ProductGroupName.OperatorIndex
                       : '*'
                   "
                 />
                 <input
                   class="input-filter"
                   type="text"
-                  v-model="filterParam.ProductGroupName.valueFinding"
+                  v-model="filterParam.ProductGroupName.Value"
+                  @input="startFinding"
                 />
               </div>
             </th>
@@ -73,13 +78,16 @@
                   @operatorOnClick="operatorOnClick"
                   filterField="UnitName"
                   :inputOperator="
-                    filterParam.UnitName ? filterParam.UnitName.value : '*'
+                    filterParam.UnitName
+                      ? filterParam.UnitName.OperatorIndex
+                      : '*'
                   "
                 />
                 <input
                   class="input-filter"
                   type="text"
-                  v-model="filterParam.UnitName.valueFinding"
+                  v-model="filterParam.UnitName.Value"
+                  @input="startFinding"
                 />
               </div>
             </th>
@@ -91,14 +99,14 @@
                   filterField="SellingPrice"
                   :inputOperator="
                     filterParam.SellingPrice
-                      ? filterParam.SellingPrice.value
+                      ? filterParam.SellingPrice.OperatorIndex
                       : ''
                   "
                 />
                 <input
                   class="input-filter"
                   type="text"
-                  v-model="filterParam.SellingPrice.valueFinding"
+                  v-model="filterParam.SellingPrice.Value"
                 />
               </div>
             </th>
@@ -107,39 +115,39 @@
               <div>
                 <FilterOption
                   @selectOnClick="selectOnClick"
-                  filterField="DisplayOption"
+                  filterField="Display"
                   :inputValue="
-                    filterParam.DisplayOption
-                      ? filterParam.DisplayOption.value
-                      : ''
+                    filterParam.Display ? filterParam.Display.OperatorIndex : ''
                   "
                 />
               </div>
             </th>
             <th>
               <div class="th-text">Loại hàng hóa</div>
-              <FilterOption
-                filterField="Category"
-                :inputValue="
-                  filterParam.Category ? filterParam.Category.value : ''
-                "
-              />
+              <div class="filter-option" ref="myComboBox">
+                <input class="inp" value="Tất cả" />
+                <div class="select-arrow">
+                  <div class="arrow"></div>
+                </div>
+              </div>
             </th>
             <th>
               <div class="th-text">Quản lí theo</div>
-              <FilterOption
-                filterField="Manage"
-                :inputValue="filterParam.Manage ? filterParam.Manage.value : ''"
-              />
+              <div class="filter-option" ref="myComboBox">
+                <input class="inp" value="Tất cả" />
+                <div class="select-arrow">
+                  <div class="arrow"></div>
+                </div>
+              </div>
             </th>
             <th>
               <div class="th-text">Trạng thái</div>
               <FilterOption
                 @selectOnClick="selectOnClick"
-                filterField="StatusBusinessOption"
+                filterField="StatusBusiness"
                 :inputValue="
-                  filterParam.StatusBusinessOption
-                    ? filterParam.StatusBusinessOption.value
+                  filterParam.StatusBusiness
+                    ? filterParam.StatusBusiness.OperatorIndex
                     : ''
                 "
               />
@@ -155,7 +163,7 @@
           >
             <td><CheckBox /></td>
             <td>{{ product.SKUCode }}</td>
-            <td>{{ product.ProductName }}</td>
+            <td @click="$emit('btnEditOnClick')">{{ product.ProductName }}</td>
             <td>{{ product.ProductGroupName }}</td>
             <td>{{ product.UnitName }}</td>
             <td>{{ product.SellingPrice }}</td>
@@ -167,11 +175,20 @@
         </tbody>
       </table>
     </div>
-    <PageNavigation />
+    <PageNavigation
+      :entityPerPage="entityPerPage"
+      :realEntityPerPage="realEntityPerPage"
+      :totalEntity="totalEntity"
+      :currentPageNumber="currentPageNumber"
+      :totalPageNumber="totalPageNumber"
+      @chooseQuantity="chooseQuantity"
+      @updatePage="updatePage"
+    />
   </div>
 </template>
 
 <script>
+import { debounce } from "debounce";
 import axios from "axios";
 import Constant from "../../common/constant1.js";
 import CommonFn from "../../common/common1.js";
@@ -182,6 +199,7 @@ import FilterOption from "./BaseFilterOption.vue";
 import CheckBox from "./BaseCheckBox.vue";
 import Dropdown from "./BaseDropdown.vue";
 import PageNavigation from "./BasePageNavigation.vue";
+import Enumeration from "../../common/enumeration.js";
 export default {
   name: "BaseTable",
   components: {
@@ -195,6 +213,7 @@ export default {
 
   props: {
     response: String,
+    count: Number,
   },
 
   data() {
@@ -213,21 +232,67 @@ export default {
       units: [],
       // Danh sách tr được chọn
       isSelected: [],
+
+      // -------------------- Phân trang ----------------------
+      // Tổng số hàng hóa
+      totalEntity: 0,
+      // Tổng số trang
+      totalPageNumber: 1,
+      // Trang hiện tại
+      currentPageNumber: 1,
+      // Số bản ghi mỗi trang dự kiến
+      entityPerPage: 50,
+      // Số bản ghi thực tế mỗi trang
+      realEntityPerPage: 1,
     };
   },
 
   methods: {
+    /**
+     * Hàm thực hiện tìm kiếm theo từ khóa
+     * Created By: Ngọc 26/10/2021
+     */
+    startFinding: debounce(function () {
+      this.loadDataTable();
+      this.$emit("refreshOnClick");
+    }, 500),
+
+    /**
+     * Hàm được gọi khi thay đổi page hoặc số lượng hàng hóa/trang
+     * Created By: Ngọc 26/10/2021
+     */
+    updatePage(currentPageNumber) {
+      let me = this;
+      me.currentPageNumber = currentPageNumber;
+      this.loadDataTable();
+      me.$emit("refreshOnClick");
+    },
+
+    /**
+     * Hàm chọn số lượng bản ghi trên 1 trang
+     * Created By: Ngọc 27/09/2021
+     */
+    chooseQuantity(entityPerPage) {
+      this.entityPerPage = entityPerPage;
+      this.loadDataTable();
+      this.$emit("refreshOnClick");
+    },
+
     /**
      * Hàm gửi id lên trên để các toolbar thực hiện
      * Created By: Ngọc 28/09/2021
      */
     getId() {
       let me = this;
-      me.products.forEach((product, index) => {
-        if (me.isSelected[index]) {
-          this.$emit('getId', product.ProductId, product.ParentId);
-        }
-      });
+      if (me.products.length > 0) {
+        me.products.forEach((product, index) => {
+          if (me.isSelected[index]) {
+            this.$emit("getId", product.ProductId);
+          }
+        });
+      } else {
+        this.$emit("getId", null);
+      }
     },
 
     /**
@@ -267,7 +332,7 @@ export default {
 
     /**
      * Hàm bắt sự kiện chọn giá trị từ component con gửi lên
-     * Ngọc 26/09/2021
+     * Created By: Ngọc 26/09/2021
      */
     selectOnClick(filterField, left, width) {
       this.itemName = filterField;
@@ -282,37 +347,58 @@ export default {
 
     /**
      * Hàm bắt sự kiện bấm chọn 1 giá trị từ component con gửi lên
-     * Ngọc 26/09/2021
+     *  Created By: Ngọc 26/09/2021
      */
-    chooseDropdownItem(left, value) {
+    chooseDropdownItem(left, OperatorIndex) {
       this.left = left;
-      this.filterParam[this.currentFilterField].value = value;
+      this.filterParam[this.currentFilterField].OperatorIndex = OperatorIndex;
+      this.loadDataTable();
+      this.$emit("refreshOnClick");
+    },
+
+    /**
+     * Hàm bắt sự kiện bấm ra ngoài hộp chọn
+     *  Created By: Ngọc 26/09/2021
+     */
+    resetPos(left) {
+      this.left = left;
     },
 
     /**
      * Hàm lấy dữ liệu cho table
-     * Ngọc 30/07/2021
+     * Created By: Ngọc 26/09/2021
      */
     loadDataTable() {
       let me = this;
       me.products = [];
-      let url = `${Constant.LocalUrl}/Products`;
+      let filterParams = [];
+      for (let key in me.filterParam) {
+        let field = me.filterParam[key];
+        if (field.Value || key == "Display" || key == "StatusBusiness")
+          filterParams.push(field);
+      }
+      let url = `${Constant.LocalUrl}/Products/paging?pageSize=${me.entityPerPage}&pageNumber=${me.currentPageNumber}`;
       axios
-        .get(url)
+        .post(url, filterParams)
         .then((res) => {
-          if (res.status == 200) {
-            me.products = res.data;
-            // me.totalEntity = res.data.TotalRecord;
-            // me.totalPageNumber = res.data.TotalPageNumber;
-            // me.realEntityPerPage = res.data.Entities.length;
+          if (res.status == Enumeration.Status.OK) {
+            me.products = res.data.Products;
+            me.totalEntity = res.data.TotalRecord;
+            me.totalPageNumber = res.data.TotalPageNumber;
+            me.realEntityPerPage = res.data.Products.length;
             // format các product
             me.format(me.products);
             me.resetTr();
-          } else if (res.status == 204) {
-            // me.totalEntity = 0;
-            // me.totalPageNumber = 1;
-            // me.currentPageNumber = 1;
+          } else if (
+            res.status == Enumeration.Status.NoContent ||
+            res.status == Enumeration.Status.ServerError
+          ) {
+            me.totalEntity = 0;
+            me.realEntityPerPage = 0;
+            me.totalPageNumber = 1;
+            me.currentPageNumber = 1;
             me.products = [];
+            me.getId();
           }
         })
         .catch((res) => {
@@ -322,7 +408,7 @@ export default {
 
     /**
      * Hàm reset các tr về không được chọn rồi chọn tr đầu
-     * Created By: Ngọc 28/09/2021
+     * Created By: Ngọc 26/09/2021
      */
     resetTr() {
       try {
@@ -340,7 +426,7 @@ export default {
 
     /**
      * Hàm format sau khi lấy dữ liệu
-     * Created By: Ngọc 27/09/2021
+     * Created By: Ngọc 26/09/2021
      */
     format(products) {
       let me = this;
@@ -372,7 +458,7 @@ export default {
 
     /**
      * Hàm render tên phòng ban
-     * Created By: Ngọc 27/09/2021
+     * Created By: Ngọc 26/09/2021
      */
     getProductGroupName(product) {
       let me = this;
@@ -385,7 +471,7 @@ export default {
 
     /**
      * Hàm render tên vị trí
-     * Created By: Ngọc 27/09/2021
+     * Created By: Ngọc 26/09/2021
      */
     getUnitName(product) {
       let me = this;
@@ -430,15 +516,23 @@ export default {
   },
   created() {
     this.filterParam = {
-      SKUCode: {},
-      ProductName: {},
-      ProductGroupName: {},
-      UnitName: {},
-      SellingPrice: {},
-      DisplayOption: {},
-      Category: {},
-      Manage: {},
-      StatusBusinessOption: {},
+      SKUCode: {
+        OperatorIndex: 0,
+        Field: "SKUCode",
+        Value: null,
+      },
+      ProductName: { OperatorIndex: 0, Field: "ProductName", Value: null },
+      ProductGroupName: {
+        OperatorIndex: 0,
+        Field: "ProductGroupName",
+        Value: null,
+      },
+      UnitName: { OperatorIndex: 0, Field: "UnitName", Value: null },
+      SellingPrice: { OperatorIndex: 0, Field: "SellingPrice", Value: null },
+      Display: { OperatorIndex: 2, Field: "Display" },
+      Category: { OperatorIndex: 2, Field: "Category" },
+      Manage: { OperatorIndex: 2, Field: "StatusBusiness" },
+      StatusBusiness: { OperatorIndex: 2, Field: "StatusBusiness" },
     };
 
     this.getUnit();
@@ -447,12 +541,11 @@ export default {
   },
 
   watch: {
-    response: function(){
+    response: function () {
       this.loadDataTable();
-    }
+    },
   },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -39,3 +39,4 @@ D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.EShop.API\obj\Debug\net5.0\MISA.
 D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.EShop.API\obj\Debug\net5.0\ref\MISA.EShop.API.dll
 D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.EShop.API\obj\Debug\net5.0\MISA.EShop.API.pdb
 D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.EShop.API\obj\Debug\net5.0\MISA.EShop.API.genruntimeconfig.cache
+D:\MISA_GPBL\MISA.EShop\MISA.EShop.Backend\MISA.EShop.API\bin\Debug\net5.0\Newtonsoft.Json.dll

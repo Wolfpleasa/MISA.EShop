@@ -61,7 +61,7 @@ namespace MISA.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Có bản ghi bị lỗi, không thể thực hiện xóa hàng loạt.
+        ///   Looks up a localized string similar to Có bản ghi bị lỗi, không thể thực hiện xóa hàng loạt..
         /// </summary>
         public static string Cannot_Delete_All {
             get {
@@ -70,7 +70,7 @@ namespace MISA.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Thông tin {0} chỉ chứa chữ số.
+        ///   Looks up a localized string similar to Thông tin {0} chỉ chứa chữ số..
         /// </summary>
         public static string Contain_Numbers_Only {
             get {
@@ -79,7 +79,7 @@ namespace MISA.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mã nhập vào đã bị trùng.
+        ///   Looks up a localized string similar to Mã nhập vào đã bị trùng..
         /// </summary>
         public static string Duplicate_Code {
             get {
@@ -88,7 +88,16 @@ namespace MISA.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Nhóm hàng hóa &lt;{0}&gt; đã có trong hệ thống.
+        ///   Looks up a localized string similar to Mã vạch {0} đã có trong hệ thống. Vui lòng kiểm tra lại.
+        /// </summary>
+        public static string Duplicate_ProductCode {
+            get {
+                return ResourceManager.GetString("Duplicate_ProductCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nhóm hàng hóa {0} đã có trong hệ thống. Vui lòng kiểm tra lại.
         /// </summary>
         public static string Duplicate_ProductGroupName {
             get {
@@ -97,7 +106,16 @@ namespace MISA.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Đơn vị tính &lt;{0}&gt; đã có trong hệ thống.
+        ///   Looks up a localized string similar to Mã SKU {0} đã có trong hệ thống. Vui lòng kiểm tra lại.
+        /// </summary>
+        public static string Duplicate_SKUCode {
+            get {
+                return ResourceManager.GetString("Duplicate_SKUCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Đơn vị tính {0} đã có trong hệ thống. Vui lòng kiểm tra lại.
         /// </summary>
         public static string Duplicate_UnitName {
             get {
@@ -106,25 +124,7 @@ namespace MISA.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vui lòng nhập mã nhân viên theo định dạng NV-XXX.
-        /// </summary>
-        public static string EmployeeCode {
-            get {
-                return ResourceManager.GetString("EmployeeCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mã nhân viên không được phép để trống.
-        /// </summary>
-        public static string Empty_EmployeeCode {
-            get {
-                return ResourceManager.GetString("Empty_EmployeeCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Thông tin {0} không được phép để trống.
+        ///   Looks up a localized string similar to Thông tin {0} không được phép để trống..
         /// </summary>
         public static string Empty_Field {
             get {
@@ -133,7 +133,7 @@ namespace MISA.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Có lỗi xảy ra! Vui lòng liên hệ MISA.
+        ///   Looks up a localized string similar to Có lỗi xảy ra! Vui lòng liên hệ MISA..
         /// </summary>
         public static string Error_Message_UserVN {
             get {
@@ -142,16 +142,7 @@ namespace MISA.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Số điện thoại không đúng định dạng.
-        /// </summary>
-        public static string Error_PhoneNumber {
-            get {
-                return ResourceManager.GetString("Error_PhoneNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Vui lòng chọn 1 tệp excel rồi tiếp tục.
+        ///   Looks up a localized string similar to Vui lòng chọn 1 tệp excel rồi tiếp tục..
         /// </summary>
         public static string Form_File_IsNot_Null {
             get {

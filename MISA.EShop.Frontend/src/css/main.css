@@ -1,5 +1,6 @@
 @import url("../css/base/text-box.css");
-@import url("../css/base/tooltip.css");
+@import url("../css/base/red-point.css");
+@import url("../css/base/alert-popup.css");
 @import url("../css/base/toolbar.css");
 @import url("../css/base/loader.css");
 @import url("../css/base/combobox.css");
@@ -15,8 +16,8 @@
 @import url("../css/base/picture.css");
 @import url("../css/base/radio.css");
 @import url("../css/base/popup.css");
-@import url("../css/base/input-filter.css");
 @import url("../css/base/toast-message.css");
+@import url("../css/base/tooltip.css");
 @import url("../css/base/checkbox.css");
 @import url("../css/layout/header.css");
 @import url("../css/layout/content.css");

@@ -12,6 +12,8 @@ export default class Resource {
         No: "Không", // Không
     }
 
+    static DEFAULT_PICTUREID = "bdebe2cb-bccb-413e-aa18-089372975423";
+
     // Đối tượng
     static EMPLOYEE = "nhân viên";
 
@@ -44,10 +46,16 @@ export default class Resource {
     static CONFIRM_EDIT = "Bạn có thực sự muốn sửa Nhân viên";
     static CONFIRM_ADD_DATA_CHANGED =
         "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?";
-    static CONFIRM_EXPORT =
-        "Bạn có thực sự muốn xuất khẩu nhân viên ra file Excel không?";
     static CONFIRM = "không?";
 
     //Chọn bao nhiêu bản ghi trên 1 trang
     static Record_Per_Page = "bản ghi trên 1 trang";
+
+    // Các trạng thái popup
+    static Popup = {
+        Warning: "warning-popup",
+        Notify: "notify-popup",
+        Confirm: "confirm-popup",
+        Export: "export-popup",
+    }
 }

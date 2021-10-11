@@ -1,10 +1,10 @@
 <template>
   <div :class="['popup z-index-12', { 'd-none': dnone }]">
     <div class="head">
-      <div class="head-text">Thêm mới {{ property }}</div>
+      <div class="head-text">Thêm mới {{ propertyName }}</div>
       <div @click="btnCancelOnClick" class="head-close"></div>
     </div>
-    <div class="middle">
+    <div :class="['middle', { unit: property == 'Unit' }]">
       <div v-if="property == 'Unit'">
         <Input
           labelText="Đơn vị tính"
@@ -93,6 +93,7 @@
 <script>
 import axios from "axios";
 import Constant from "../../common/constant1.js";
+import { eventBus } from "../../main.js";
 
 import ButtonIcon from "../base/BaseButtonIcon.vue";
 import Input from "../base/BaseInput.vue";
@@ -111,6 +112,7 @@ export default {
     },
     property: String,
     subClass: String,
+    
   },
 
   data() {
@@ -118,6 +120,7 @@ export default {
       unit: {},
       productGroup: {},
       reFocus: false,
+      propertyName: "",
     };
   },
   methods: {
@@ -149,7 +152,7 @@ export default {
       axios
         .post(`${Constant.LocalUrl}/${models}`, model)
         .then(() => {
-          me.getIdForCombobox(models,model);
+          me.getIdForCombobox(models, model);
         })
         .catch((err) => {
           console.log(err);
@@ -160,31 +163,41 @@ export default {
      * Hàm lấy lại id vừa thêm để hiện giá trị combobox
      * Created By: Ngọc 01/10/2021
      */
-    getIdForCombobox(models, model){
+    getIdForCombobox(models, model) {
       let me = this,
         itemName = "",
-        itemId = ""
+        itemId = "";
       if (me.property == "Unit") {
         itemName = "UnitName";
-         itemId = "UnitId" ;
-      } else if (this.property == "ProductGroup") {       
+        itemId = "UnitId";
+      } else if (this.property == "ProductGroup") {
         itemName = "ProductGroupName";
         itemId = "ProductGroupId";
-        }
-      axios.get(`${Constant.LocalUrl}/${models}/${model[itemName]}`)
-            .then((res)=>{
-              console.log(res);
-               console.log( res.data[0][itemId], res.data[0][itemName]);
-              this.$emit("getIdForCombobox", res.data[0][itemId], res.data[0][itemName]);
-            }).catch(err => {
-              console.log(err);
-            })
-    }
+      }
+      axios
+        .get(`${Constant.LocalUrl}/${models}/${model[itemName]}`)
+        .then((res) => {
+          eventBus.$emit(
+            "getIdForCombobox",
+            res.data[0][itemId],
+            res.data[0][itemName]
+          );
+          this.btnCancelOnClick();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
 
   watch: {
-    dnone: function () {
-      this.reFocus = !this.reFocus;
+    property: function () {
+      let me = this;
+      if (me.property == "Unit") {
+        me.propertyName = "đơn vị tính";
+      } else if (this.property == "ProductGroup") {
+        me.propertyName = "nhóm hàng hóa";
+      }
     },
   },
 };

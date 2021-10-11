@@ -21,14 +21,14 @@ namespace MISA.Core.Interfaces.Repository
         /// </summary>
         /// <returns></returns>
         /// Created By: Ngọc 25/09/2021
-        IEnumerable<Unit> Add(Unit unit);
+        int Add(Unit unit);
 
         /// <summary>
         /// Hàm lấy đơn vị tính theo tên
         /// </summary>
         /// <returns></returns>
         /// Created By: Ngọc 25/09/2021
-        IEnumerable<Unit> GetUnitByName(string unitName);
+        Unit GetUnitByName(string unitName);
 
         /// <summary>
         /// Hàm check trùng tên đơn vị tính

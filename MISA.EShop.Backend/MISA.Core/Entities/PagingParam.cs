@@ -9,21 +9,11 @@ namespace MISA.Core.Entities
 {
     public class PagingParam
     {
-        public DataType DataType { get; set; }
-
-        public int OperatorIndex { get; set; }
+        public int? OperatorIndex { get; set; }
 
         public string Field { get; set; }
         
         public string Value { get; set; }
 
-
-        // string
-        // 0
-        // abc
-
-        // integer
-        //0
-        //"0"
     }
 }

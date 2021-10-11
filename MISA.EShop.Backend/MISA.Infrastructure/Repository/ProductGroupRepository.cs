@@ -36,7 +36,7 @@ namespace MISA.Infrastructure.Repository
         /// <param name="productGroup"></param>
         /// <returns></returns>
         /// Created By: Ngọc 25/09/2021
-        public IEnumerable<ProductGroup> Add(ProductGroup productGroup)
+        public int Add(ProductGroup productGroup)
         {
             try
             {
@@ -57,13 +57,13 @@ namespace MISA.Infrastructure.Repository
 
                     dynamicParam.Add($"${propName}", propValue);
                 }
-                var rowEffects = _dbConnection.Query<Product>("Proc_InsertProductGroup", param: dynamicParam, commandType: CommandType.StoredProcedure);
-                return (IEnumerable<ProductGroup>)rowEffects;
+                var rowEffects = _dbConnection.Execute("Proc_InsertProductGroup", param: dynamicParam, commandType: CommandType.StoredProcedure);
+                return rowEffects;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return null;
+                return 0;
             }
         }
 
@@ -81,14 +81,14 @@ namespace MISA.Infrastructure.Repository
             }
         }
 
-        public IEnumerable<ProductGroup> GetProductGroupByName(string productGroupName)
+        public ProductGroup GetProductGroupByName(string productGroupName)
         {
             {
                 try
                 {
                     var dynamicParam = new DynamicParameters();
                     dynamicParam.Add("$ProductGroupName", productGroupName);
-                    var productGroup = _dbConnection.Query<ProductGroup>("Proc_GetProductGroupByName", param: dynamicParam, commandType: CommandType.StoredProcedure);
+                    var productGroup = _dbConnection.QueryFirstOrDefault<ProductGroup>("Proc_GetProductGroupByName", param: dynamicParam, commandType: CommandType.StoredProcedure);
                     return productGroup;
                 }
                 catch (Exception ex)
@@ -104,7 +104,7 @@ namespace MISA.Infrastructure.Repository
             try
             {
                 var productGroup = GetProductGroupByName(productGroupName);
-                if (productGroup.Count() > 0)
+                if (productGroup != null)
                 {
                     return false;
                 }

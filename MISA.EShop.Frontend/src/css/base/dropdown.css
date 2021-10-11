@@ -2,10 +2,11 @@
     height: fit-content;
     position: absolute;
     padding: 4px 6px 4px 4px;
-    top: 69px;
+    top: 67px;
     z-index: 4;
     background-color: #fff;
     box-sizing: border-box;
+    box-shadow: 0 3px 6px 0 rgb(0, 0, 0, 0.16);
 }
 
 .dropdown-item {

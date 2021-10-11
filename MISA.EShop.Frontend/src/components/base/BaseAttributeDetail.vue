@@ -1,5 +1,5 @@
 <template>
-  <div class="eshop-attrDetail" v-if="productDetails.length > 0">
+  <div class="eshop-attrDetail" v-if="productDetails && productDetails.length > 0">
     <div>
       {{ labelText }}
     </div>
@@ -62,10 +62,11 @@ export default {
 
     products: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
 
     productName: String,
+    skuCode: String,
   },
   data() {
     return {
@@ -94,27 +95,34 @@ export default {
     removeProductDetail(product) {
       this.$emit("deleteAttribute", product.Color);
     },
-
   },
   watch: {
     products: function(value) {
       this.productDetails = value;
       // format các ô tiền
-      this.productDetails.forEach(product=>{
-        if(product.PurchasePrice){
-          product.PurchasePrice = CommonFn.formatMoney(product.PurchasePrice);
-        }
-        if(product.SellingPrice){
-          product.SellingPrice = CommonFn.formatMoney(product.SellingPrice);
-        }
-      })
+      if (this.productDetails) {
+        this.productDetails.forEach((product) => {
+          if (product.PurchasePrice) {
+            product.PurchasePrice = CommonFn.formatMoney(product.PurchasePrice);
+          }
+          if (product.SellingPrice) {
+            product.SellingPrice = CommonFn.formatMoney(product.SellingPrice);
+          }
+        });
+      }
     },
 
-    productName: function(){
-      this.productDetails.forEach(product=>{
-        product.ProductName = `${this.productName}/${product.Color}`;
-      })
-    }
+    productName: function() {
+      this.productDetails.forEach((product) => {
+        product.ProductName = `${this.productName} (${product.Color})`;
+      });
+    },
+
+    skuCode: function() {
+      this.productDetails.forEach((product) => {
+        product.SKUCode = `${this.skuCode}-${product.Color.charAt(0)}`;
+      });
+    },
   },
 
   mounted() {},

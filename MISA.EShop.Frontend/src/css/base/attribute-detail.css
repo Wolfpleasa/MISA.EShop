@@ -3,6 +3,8 @@
     display: flex;
     padding: 8px 16px 8px 8px;
     width: calc(100% - 24px);
+    max-height: 237px;
+    height: fit-content;
 }
 
 .attrDetail {
@@ -18,6 +20,7 @@
 .attrDetail table {
     width: 100%;
     max-height: 237px;
+    height: fit-content;
     border-collapse: separate;
     border-spacing: 0;
     border-left: 1px solid #c3c3c3;

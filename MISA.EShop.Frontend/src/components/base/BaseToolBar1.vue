@@ -8,17 +8,20 @@
     <ButtonIcon
       iconName="icon-duplicate"
       buttonText="Nhân bản"
-      @btn-click="btnDupicateOnClick"
+      @btn-click="btnDuplicateOnClick"
+      :subClass = "disable"
     />
     <ButtonIcon
       iconName="icon-edit"
       buttonText="Sửa"
       @btn-click="btnEditOnClick"
+       :subClass = "disable"
     />
     <ButtonIcon
       iconName="icon-delete"
       buttonText="Xóa"
       @btn-click="btnDeleteOnClick"
+      :subClass = "disable"
     />
     <ButtonIcon
       iconName="icon-refresh"
@@ -39,25 +42,17 @@ export default {
   },
 
   props: {
-    id: String,
-    subClass: String,
-    iconName: String,
-    buttonText: String,
-    tabindex: String,
-    autoFocus: String,
-    reFocus: Boolean,
+    productId: String,
+  },
+
+  data(){
+    return {
+      disable: "",
+      subclass: "",
+    }
   },
 
   methods: {
-    /**
-     * Hàm ngăn chặn sự kiện mặc định của nút tab, dùng thì mới thực hiện được nút enter
-     * Ngọc 4/8/2021
-     */
-    keydownOnSelect(event) {
-      if (event.Code == "Tab") {
-        event.preventDefault();
-      }
-    },
 
     /**
      * Hàm bấm nút Thêm mới
@@ -71,8 +66,8 @@ export default {
      * Hàm bấm nút Nhân bản
      * Created By: Ngọc 22/9/2021
      */
-    btnDupicateOnClick() {
-      this.$emit("btnDupicateOnClick");
+    btnDuplicateOnClick() {
+      this.$emit("btnDuplicateOnClick");
     },
 
     /**
@@ -101,9 +96,11 @@ export default {
   },
 
   watch: {
-    reFocus: function () {
-      if (this.autoFocus == "true") {
-        this.$refs.btnREF.focus();
+    productId: function () {
+      if (this.productId == null) {
+        this.disable = "disable";
+      }else{
+        this.disable = "";
       }
     },
   },

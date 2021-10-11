@@ -18,7 +18,7 @@ namespace MISA.Core.Interfaces.Services
         /// <param name="product"></param>
         /// <returns>ServiceResult: Kết quả xử lý nghiệp vụ</returns>
         /// Created By: Ngọc 25/09/2021
-        ServiceResult Add(Product product);
+        ServiceResult Add(Product product, Picture picture);
 
         /// <summary>
         /// Nghiệp vụ sửa thông tin hàng hóa
@@ -26,7 +26,7 @@ namespace MISA.Core.Interfaces.Services
         /// <param name="product"></param>
         /// <returns>ServiceResult: Kết quả xử lý nghiệp vụ</returns>
         /// Created By: Ngọc 25/09/2021
-        ServiceResult Edit(Product product, Guid ProductId);
+        ServiceResult Edit(Product product, Guid ProductId, Picture picture);
 
         /// <summary>
         /// Nghiệp vụ sửa thông tin hàng hóa
@@ -35,6 +35,14 @@ namespace MISA.Core.Interfaces.Services
         /// <returns>ServiceResult: Kết quả xử lý nghiệp vụ</returns>
         /// Created By: Ngọc 25/09/2021
         ServiceResult GetById(Guid productId);
+
+
+        /// <summary>
+        /// Hàm sinh mã SKU tự động
+        /// </summary>
+        /// <param name="productName"></param>
+        /// <returns></returns>
+        ServiceResult AutoGenSKUCode(string productName);
         #endregion
     }
 }

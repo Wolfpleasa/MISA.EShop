@@ -1,41 +1,56 @@
 <template>
-  <div>
-    <Header :mode="mode" :showFormDetail="!DialogHasDnone" />
+  <div @click="myClick()">
+    <Header :mode="mode" :showFormDetail="!hideFormDetail" />
     <Menu />
     <div class="content">
       <ToolBar
+        :productId="productId"
         @btnAddOnClick="btnAddOnClick"
         @btnDuplicateOnClick="btnDuplicateOnClick"
         @btnEditOnClick="btnEditOnClick"
         @btnDeleteOnClick="btnDeleteOnClick"
         @refreshOnClick="refreshOnClick"
       />
-
-      <Table @getId="getId" :response="response" />
+      <Table
+        :response="response"
+        :count="count"
+        @getId="getId"
+        @refreshOnClick="refreshOnClick"
+        @btnEditOnClick="btnEditOnClick"
+      />
     </div>
 
     <ProductDetail
-      v-bind:dnone="DialogHasDnone"
+      v-bind:dnone="hideFormDetail"
       :productId="productId"
       :formMode="formMode"
       :reopen="reopen"
       @btnDialogCancelOnClick="btnDialogCancelOnClick"
-      @btnSaveOnClick="btnSaveOnClick"
       @resetAfterSaveData="resetAfterSaveData"
       @callToastMessage="callToastMessage"
+      @callAlertPopup="callAlertPopup"
+      @hidePopupInfo="hidePopupInfo"
     />
 
     <!-- 3 page làm mờ -->
     <!--  của warningpopup -->
     <div
-      :class="['pageCover z-index-11', { 'd-none': WarningHasDnone }]"
+      :class="['pageCover z-index-11', { 'd-none': hideWarningPopup }]"
     ></div>
-   
-    <Loader :HideLoader="HideLoader" />
+
+    <!--  của warningpopup -->
+    <div :class="['pageCover z-index-11', { 'd-none': hideAlertPopup }]"></div>
+
+    <!--  của popup thêm thông tin đơn vị,nhóm hàng hóa -->
+    <div :class="['pageCover z-index-11', { 'd-none': hidePopup }]"></div>
+
+    <!-- của loader  -->
+    <div :class="['pageCover z-index-1', { 'd-none': hideLoader }]"></div>
+    <Loader :hideLoader="hideLoader" />
 
     <WarningPopup
       :idPopup="idPopup"
-      :dnone="WarningHasDnone"
+      :dnone="hideWarningPopup"
       :warningText="warningText"
       :warning="warning"
       :subClass="bonusClass"
@@ -45,30 +60,43 @@
 
     <ToastMessage
       :subClass="subClass"
-      :HideToastMessage="HideToastMessage"
-      :ToastMessageText="ToastMessageText"
+      :hideToastMessage="hideToastMessage"
+      :toastMessageText="toastMessageText"
       @closeToastMessage="closeToastMessage"
+    />
+
+    <AlertPopup
+      :subClass="subClass"
+      :hideAlertPopup="hideAlertPopup"
+      :alertMessageText="alertMessageText"
+    />
+
+    <Popup
+      :dnone="hidePopup"
+      :property="property"
+      @closePopupInfo="closePopupInfo"
     />
   </div>
 </template>
 
 <script>
+import { eventBus } from "../../main.js";
 import axios from "axios";
+
 import Constant from "../../common/constant1.js";
 import Enumeration from "../../common/enumeration.js";
-import ResourceVN from '../../common/resourceVN.js';
+import ResourceVN from "../../common/resourceVN.js";
 
 import Header from "../../components/layout/TheHeader.vue";
 import Menu from "../../components/layout/TheMenu.vue";
 import ToolBar from "../../components/base/BaseToolBar1.vue";
 import Table from "../../components/base/BaseTable.vue";
-
+import AlertPopup from "../../components/base/BaseAlertPopup.vue";
 import ToastMessage from "../../components/base/BaseToastMessage.vue";
-
 import Loader from "../../components/base/BaseLoader.vue";
-
 import ProductDetail from "./ProductDetail.vue";
 import WarningPopup from "../../components/layout/ThePopup.vue";
+import Popup from "../../components/base/BasePopup.vue";
 export default {
   name: "ProductList",
   components: {
@@ -80,6 +108,8 @@ export default {
     ProductDetail,
     WarningPopup,
     Table,
+    AlertPopup,
+    Popup,
   },
   data() {
     return {
@@ -88,21 +118,28 @@ export default {
       mode: "",
 
       //ToastMessage
-      HideToastMessage: true,
-      ToastMessageText: "",
+      hideToastMessage: true,
+      toastMessageText: "",
+
       //Loader
-      HideLoader: true,
+      hideLoader: true,
+
+      //AlertPopup
+      alertMessageText: "",
+      hideAlertPopup: true,
+
+      property: "",
 
       //ProductDetail
-      DialogHasDnone: true,
+      hideFormDetail: true,
       productId: null,
-      parentId: null,
       reopen: true,
-      formMode: -1,
+      formMode: Enumeration.FormMode.None,
       subClass: "",
+      hidePopup: true,
 
       //--------------- form cảnh báo/thông báo ------------------
-      WarningHasDnone: true,
+      hideWarningPopup: true,
       warning: "",
       warningText: "",
       idPopup: "",
@@ -112,32 +149,43 @@ export default {
       response: "",
       bonusClass: "",
 
-      // -------------------- Phân trang ----------------------
-      // Tổng số hàng hóa
-      totalEntity: 0,
-      // Tổng số trang
-      totalPageNumber: 1,
-      // Trang hiện tại
-      currentPageNumber: 1,
-      // Số bản ghi mỗi trang dự kiến
-      entityPerPage: 5,
-      // Số bản ghi thực tế mỗi trang
-      realEntityPerPage: 1,
-
-      // ------------ Tìm kiếm ------------
-      // Nội dung tìm kiếm
-      searchContent: "",
+      count: 0,
     };
   },
 
   methods: {
     /**
+     * Hàm bắt sự kiện click trong trang hàng hóa
+     * Created By: Ngọc 01/10/2021
+     */
+    myClick() {
+      this.count++;
+    },
+
+    /**
+     * Hàm ẩn hiện loader của popup thêm đơn vị, nhóm hàng hóa
+     * Created By: Ngọc 01/10/2021
+     */
+    closePopupInfo() {
+      this.hidePopup = true;
+      this.property = "";
+    },
+
+    /**
+     * Hàm mở và thêm thông tin cơ bản
+     * Created By: Ngọc 01/10/2021
+     */
+    hidePopupInfo(hidePopup, fieldName) {
+      this.hidePopup = hidePopup;
+      this.property = fieldName;
+    },
+
+    /**
      * Hàm lấy id của hàng đang được chọn
      * Created By: Ngọc 28/09/2021
      */
-    getId(productId, parentId) {
+    getId(productId) {
       this.productId = productId;
-      this.parentId = parentId;
     },
 
     /**
@@ -145,9 +193,9 @@ export default {
      * Ngọc 12/8/2021
      */
     refreshOnClick() {
-      this.HideLoader = false;
+      this.hideLoader = false;
       setTimeout(() => {
-        this.HideLoader = true;
+        this.hideLoader = true;
       }, 1000);
     },
 
@@ -157,7 +205,7 @@ export default {
      */
     btnAddOnClick() {
       let me = this;
-      me.DialogHasDnone = false;
+      me.hideFormDetail = false;
       this.formMode = Enumeration.FormMode.Add;
       this.mode = "Thêm mới";
     },
@@ -167,9 +215,11 @@ export default {
      * Created By: Ngọc 25/09/2021
      */
     btnEditOnClick() {
-      this.DialogHasDnone = false;
-      this.formMode = Enumeration.FormMode.Edit;
-      this.mode = "Sửa";
+      setTimeout(() => {
+        this.hideFormDetail = false;
+        this.formMode = Enumeration.FormMode.Edit;
+        this.mode = "Sửa";
+      }, 10);
     },
 
     /**
@@ -220,72 +270,48 @@ export default {
 
     /**
      * Hàm bấm nút xóa
-     * Ngọc 30/07/2021
+     * Created By: Ngọc 30/10/2021
      */
     async btnDeleteOnClick() {
       let me = this;
       await axios
         .get(`${Constant.LocalUrl}/Products/${me.productId}`)
         .then((res) => {
-         res.data.forEach(data => {
-           if(data.ProductId == me.productId){
-             Object.assign(me.product, data);
-           }
-         });
+          res.data.forEach((data) => {
+            if (data.ProductId == me.productId) {
+              Object.assign(me.product, data);
+            }
+          });
         })
         .catch((err) => {
           console.log(err);
         });
       me.warningText = `${ResourceVN.CONFIRM_DELETE} <span>${me.product.SKUCode}-${me.product.ProductName}</span> ${ResourceVN.CONFIRM}`;
-      me.warning = `Xóa dữ liệu`;
+      me.warning = `Xóa hàng hóa`;
 
-      me.WarningHasDnone = false;
-      me.idPopup = "warning-popup";
+      me.hideWarningPopup = false;
+      me.idPopup = ResourceVN.Popup.Warning;
     },
 
     /**
      * Hàm bấm nút nhân bản
-     * Ngọc 30/07/2021
+     * Created By: Ngọc 30/10/2021
      */
     btnDuplicateOnClick() {
-      let me = this;
-      var count = 0;
-      this.isSelected.forEach((selected) => {
-        if (selected) {
-          count = count + 1;
-        }
-      });
-      if (count > 1) {
-        me.warning = `Nhân bản thông tin của ${count} hàng hóa`;
-        me.warningText = `Xác nhận nhân bản thông tin của <b>${count} hàng hóa </b> này không`;
-      } else {
-        let fullname = "";
-        this.isSelected.forEach((selected, index) => {
-          if (selected) {
-            fullname = me.products[index].FullName;
-          }
-        });
-        me.warning = `Nhân bản thông tin của nhân  viên ${fullname}`;
-        me.warningText = `Xác nhận nhân bản thông tin của hàng hóa <b>${fullname} </b>`;
-      }
-
-      me.WarningHasDnone = false;
-      me.idPopup = "notify-popup";
-      me.btnCancelText = "Hủy";
-      me.bonusClass = "w-100";
-      me.btnConfirmText = "Lưu";
-      me.notifyMode = 2;
+      this.hideFormDetail = false;
+      this.formMode = Enumeration.FormMode.Duplicate;
+      this.mode = "Nhân bản";
     },
 
     /**
      * Hàm bấm nút xác nhận
-     * Ngọc 30/07/2021
+     * Created By: Ngọc 30/10/2021
      */
     async btnConfirmOnClick(idPopup) {
       let me = this;
       // Nếu form cảnh báo xóa được gọi
-      me.WarningHasDnone = true;
-      if (idPopup == "warning-popup") {
+      me.hideWarningPopup = true;
+      if (idPopup == ResourceVN.Popup.Warning) {
         await axios
           .delete(`${Constant.LocalUrl}/Products/${me.productId}`)
           .then(() => {
@@ -300,6 +326,7 @@ export default {
           });
         let responseTime = Number(new Date());
         me.response = `${responseTime}`;
+        me.refreshOnClick();
       }
 
       me.idPopup = "";
@@ -360,22 +387,12 @@ export default {
     },
 
     /**
-     * Hàm được gọi khi thay đổi page hoặc số lượng hàng hóa/trang
-     * Ngọc 12/8/2021
-     */
-    updatePage(currentPageNumber) {
-      let me = this;
-      me.currentPageNumber = currentPageNumber;
-      me.refreshOnClick();
-    },
-
-    /**
-     * Hàm đóng popup
-     * Ngọc 29/07/2021
+     * Hàm đóng popup cảnh báo xóa
+     * Created By: Ngọc 30/10/2021
      */
     btnCancelOnClick() {
       let me = this;
-      me.WarningHasDnone = true;
+      me.hideWarningPopup = true;
     },
 
     /**
@@ -384,48 +401,26 @@ export default {
      */
     btnDialogCancelOnClick() {
       let me = this;
-      me.DialogHasDnone = true;
+      me.hideFormDetail = true;
       me.mode = "";
       me.formMode = Enumeration.FormMode.None;
     },
 
     /**
      * Hàm thực hiện những reset sau khi lưu
-     * Ngọc 5/8/2021
+     * Created By: Ngọc 25/09/2021
      */
     resetAfterSaveData() {
       let me = this;
       //reset formMode
       me.formMode = Enumeration.FormMode.None;
       //Đống form thêm/sửa
-      me.DialogHasDnone = true;
+      me.hideFormDetail = true;
       //Đóng popup
-      me.WarningHasDnone = true;
+      me.hideWarningPopup = true;
       let responseTime = Number(new Date());
       me.response = `${responseTime}`;
-    },
-
-    /**
-     * Hàm bấm lưu được ProductDetail gửi lên
-     * Ngọc 30/07/2021
-     */
-    btnSaveOnClick(productFullName) {
-      let me = this,
-        custom = "";
-      if (this.formMode == 0) {
-        custom = "thêm";
-      } else {
-        custom = "sửa";
-      }
-      //Hiển thị popup thông báo lưu
-      me.WarningHasDnone = false;
-      me.idPopup = "notify-popup";
-      me.warning = "Lưu thông tin hàng hóa ";
-      me.warningText = `Xác nhận ${custom} hàng hóa <b>${productFullName}</b> `;
-      me.btnCancelText = "Hủy";
-      me.btnConfirmText = "Lưu";
-      me.bonusClass = "w-100";
-      me.notifyMode = 0;
+      me.refreshOnClick();
     },
 
     /**
@@ -433,9 +428,25 @@ export default {
      * Ngọc 2/8/2021
      */
     callToastMessage(text, subClass) {
-      this.HideToastMessage = false;
-      this.ToastMessageText = text;
+      this.hideToastMessage = false;
+      this.toastMessageText = text;
       this.subClass = subClass;
+    },
+
+    /**
+     * Hàm hiển thị toastmessage
+     * Created By: Ngọc 04/10/2021
+     */
+    callAlertPopup(text, subClass, skuCode) {
+      this.hideAlertPopup = false;
+      this.alertMessageText = text;
+      this.subClass = subClass;
+      if (text.includes(skuCode)) {
+        let arr = text.split(`${skuCode}`);
+        skuCode = `<b>${skuCode}</b>`;
+        arr.splice(1, 0, skuCode);
+        this.alertMessageText = arr.join(" ");
+      }
     },
 
     /**
@@ -443,21 +454,31 @@ export default {
      * Ngọc 2/8/2021
      */
     closeToastMessage() {
-      this.HideToastMessage = true;
-      this.ToastMessageText = "";
+      this.hideToastMessage = true;
+      this.toastMessageText = "";
       this.subClass = "";
     },
 
     /**
-     * Hàm chuyển đổi menu do <Menu/> gửi lên
-     * Ngọc 3/8/2021
+     * Hàm đóng popup cảnh báo
+     * Created By: Ngọc 04/10/2021
      */
-    toggleMenu() {
-      this.isToggle = !this.isToggle;
+    closeAlertPopup() {
+      try {
+        this.hideAlertPopup = true;
+        this.alertMessageText = "";
+        this.subClass = "";
+      } catch (err) {
+        console.log(err);
+      }
     },
   },
 
-  created() {},
+  created() {
+    eventBus.$on("closeAlertPopup", () => {
+      this.closeAlertPopup();
+    });
+  },
 
   watch: {},
 
@@ -465,5 +486,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

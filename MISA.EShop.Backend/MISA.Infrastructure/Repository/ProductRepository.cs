@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using MISA.Core.Entities;
+using MISA.Core.Enumeration;
 using MISA.Core.Interfaces.Repository;
 using MISA.Core.MISAAttribute;
 using MySqlConnector;
@@ -34,18 +35,29 @@ namespace MISA.Infrastructure.Repository
         #endregion
 
         #region Methods
-        public IEnumerable<Product> Add(Product product)
+        public int Add(Product product, Picture picture)
         {
             try
             {
                 int rowEffects = 0;
                 int count = 0;
-                IEnumerable<Product> res = null;
+                int res = 0;
                 Guid productId = Guid.NewGuid();
                 _dbConnection.Open();
 
                 var transaction = _dbConnection.BeginTransaction();
                 var dynamicParam = new DynamicParameters();
+                // Thêm mới ảnh
+                var pictureParam = new DynamicParameters();
+                if (picture.PictureId != new Guid())
+                {
+                    pictureParam.Add("$PictureId", picture.PictureId);
+                    pictureParam.Add("$PictureName", picture.PictureName);
+                    pictureParam.Add("$PictureTail", picture.PictureTail);                   
+                    pictureParam.Add("$PicturePath", picture.PicturePath);
+                    pictureParam.Add("$Type", picture.Type);
+                    int insertPicture = _dbConnection.Execute("Proc_InsertPicture", param: pictureParam, transaction: transaction, commandType: CommandType.StoredProcedure);
+                }
 
                 var properties = product.GetType().GetProperties();
                 // duyệt từng thuộc tính
@@ -72,7 +84,7 @@ namespace MISA.Infrastructure.Repository
 
                     }
                 }
-                res = _dbConnection.Query<Product>("Proc_InsertProduct", param: dynamicParam, transaction: transaction, commandType: CommandType.StoredProcedure);
+                res = _dbConnection.Execute("Proc_InsertProduct", param: dynamicParam, transaction: transaction, commandType: CommandType.StoredProcedure);
                 rowEffects++;
 
                 if (product?.ProductDetails?.Count > 0)
@@ -107,7 +119,7 @@ namespace MISA.Infrastructure.Repository
 
                             }
                         }
-                        res = _dbConnection.Query<Product>("Proc_InsertProduct", param: dynamicParam, transaction: transaction, commandType: CommandType.StoredProcedure);
+                        res = _dbConnection.Execute("Proc_InsertProduct", param: dynamicParam, transaction: transaction, commandType: CommandType.StoredProcedure);
                         rowEffects++;
                         count++;
                     }
@@ -121,27 +133,40 @@ namespace MISA.Infrastructure.Repository
                 {
                     transaction.Rollback();
                 }
-                return res;
+                _dbConnection.Dispose();
+                return rowEffects;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return null;
+                return 0;
             }
         }
 
-        public IEnumerable<Product> Edit(Product product, Guid productId)
+        public int Edit(Product product, Guid productId, Picture picture)
         {
             try
             {
                 int rowEffects = 0;
                 int count = 0;
-                IEnumerable<Product> res = null;
+                int res = 0;
 
                 _dbConnection.Open();
                 var transaction = _dbConnection.BeginTransaction();
                 var dynamicParam = new DynamicParameters();
                 var dynamicParamDetail = new DynamicParameters();
+                var pictureParam = new DynamicParameters();
+                // thêm mới ảnh
+                if (picture.PictureId != new Guid())
+                {
+                    pictureParam.Add("$PictureId", picture.PictureId);
+                    pictureParam.Add("$PictureName", picture.PictureName);
+                    pictureParam.Add("$PictureTail", picture.PictureTail);
+                    pictureParam.Add("$PicturePath", picture.PicturePath);
+                    pictureParam.Add("$Type", picture.Type);
+                    int insertPicture = _dbConnection.Execute("Proc_InsertPicture", param: pictureParam, transaction: transaction, commandType: CommandType.StoredProcedure);
+                }
+
                 var properties = product.GetType().GetProperties();
 
                 foreach (var prop in properties)
@@ -160,7 +185,7 @@ namespace MISA.Infrastructure.Repository
                         dynamicParam.Add($"${propName}", propValue);
                     }
                 }
-                res = _dbConnection.Query<Product>("Proc_UpdateProduct", param: dynamicParam, transaction: transaction, commandType: CommandType.StoredProcedure);
+                res = _dbConnection.Execute("Proc_UpdateProduct", param: dynamicParam, transaction: transaction, commandType: CommandType.StoredProcedure);
                 rowEffects++;
 
                 int flagMode = -1;
@@ -197,20 +222,20 @@ namespace MISA.Infrastructure.Repository
 
                         if (flagMode == 0)
                         {
-                            dynamicParamDetail.Add("ProductId", Guid.NewGuid());                          
-                            res = _dbConnection.Query<Product>("Proc_InsertProduct", param: dynamicParamDetail, transaction: transaction, commandType: CommandType.StoredProcedure);
+                            dynamicParamDetail.Add("$ProductId", Guid.NewGuid());
+                            res = _dbConnection.Execute("Proc_InsertProduct", param: dynamicParamDetail, transaction: transaction, commandType: CommandType.StoredProcedure);
                             rowEffects++;
                             count++;
                         }
                         else if (flagMode == 1)
                         {
-                            res = _dbConnection.Query<Product>("Proc_UpdateProduct", param: dynamicParamDetail, transaction: transaction, commandType: CommandType.StoredProcedure);
+                            res = _dbConnection.Execute("Proc_UpdateProduct", param: dynamicParamDetail, transaction: transaction, commandType: CommandType.StoredProcedure);
                             rowEffects++;
                             count++;
                         }
                         else
                         {
-                            res = _dbConnection.Query<Product>("Proc_DeleteProduct", param: dynamicParamDetail, transaction: transaction, commandType: CommandType.StoredProcedure);
+                            res = _dbConnection.Execute("Proc_DeleteProduct", param: dynamicParamDetail, transaction: transaction, commandType: CommandType.StoredProcedure);
                             rowEffects++;
                             count++;
                         }
@@ -226,32 +251,32 @@ namespace MISA.Infrastructure.Repository
                 {
                     transaction.Rollback();
                 }
-                return res;
+                _dbConnection.Dispose();
+                return rowEffects;
+                
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return null;
+                return 0;
             }
         }
 
-        public IEnumerable<Product> Delete(Guid productId)
+        public int Delete(Guid productId)
         {
             try
             {
                 var dynamicParam = new DynamicParameters();
                 dynamicParam.Add("$ProductId", productId);
-                var rowEffects = _dbConnection.Query<Product>("Proc_DeleteProduct", param: dynamicParam, commandType: CommandType.StoredProcedure);
+                var rowEffects = _dbConnection.Execute("Proc_DeleteProduct", param: dynamicParam, commandType: CommandType.StoredProcedure);
                 return rowEffects;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return null;
+                return 0;
             }
         }
-
-
 
         public List<Product> GetAll()
         {
@@ -291,32 +316,36 @@ namespace MISA.Infrastructure.Repository
                 dynamicParam.Add("$pageSize", pageSize);
                 dynamicParam.Add("$pageIndex", pageNumber);
 
-                var where = "1=1";
+                var where = "1=1 AND ParentId IS NULL";
                 foreach (var pagingParam in pagingParams)
                 {
                     //Lấy giá trị tìm kiếm/lọc
                     var value = pagingParam.Value;
-                    int operatorIndex = pagingParam.OperatorIndex;
+                    int? operatorIndex = pagingParam.OperatorIndex;
                     var field = pagingParam.Field;
                     if (field == "SKUCode" || field == "ProductName" || field == "ProductGroupName" || field == "UnitName")
                     {
                         switch (operatorIndex)
                         {
-                            case 0:
+                            case (int)MISAEnum.MISAStringOperator.Contain:
                                 where += $" AND {field} Like '%{value}%'";
                                 break;
-                            case 1:
+                            case (int)MISAEnum.MISAStringOperator.Equal:
                                 where += $" AND {field} = {value}";
                                 break;
-                            case 2:
-                                where += $" AND {field} Like '%{value}'";
-                                break;
-                            case 3:
+                            case (int)MISAEnum.MISAStringOperator.StartWith:
+                                //Bắt đầu bằng
                                 where += $" AND {field} Like '{value}%'";
                                 break;
-                            case 4:
+                            case (int)MISAEnum.MISAStringOperator.EndWith:
+                                //Kết thúc bằng
+                                where += $" AND {field} Like '%{value}'";
+                                break;
+                            case (int)MISAEnum.MISAStringOperator.NotContain:
+                                //Không chứa
                                 where += $" AND {field} Not Like '%{value}%'";
                                 break;
+                            default: break;
                         }
                     }
                     else if (field == "SellingPrice")
@@ -324,27 +353,31 @@ namespace MISA.Infrastructure.Repository
                         var price = Convert.ToDouble(value);
                         switch (operatorIndex)
                         {
-                            case 0:
+                            case (int)MISAEnum.MISASNumberOperator.Equal:
                                 where += $" AND {field} = {price}";
                                 break;
-                            case 1:
+                            case (int)MISAEnum.MISASNumberOperator.Lower:
                                 where += $" AND {field} < {price}";
                                 break;
-                            case 2:
+                            case (int)MISAEnum.MISASNumberOperator.LowerOrEqual:
                                 where += $" AND {field} <= {price}";
                                 break;
-                            case 3:
+                            case (int)MISAEnum.MISASNumberOperator.Greater:
                                 where += $" AND {field} > {price}";
                                 break;
-                            case 4:
+                            case (int)MISAEnum.MISASNumberOperator.GreaterOrEqual:
                                 where += $" AND {field} >= {price}";
                                 break;
+                            default: break;
                         }
                     }
-                    else
+                    else if (field == "Display" || field == "StatusBusiness")
                     {
-                        var option = Convert.ToInt32(value);
-                        where += $" AND {field} = {option}";
+                        var option = Convert.ToInt32(operatorIndex);
+                        if (option != 2)
+                        {
+                            where += $" AND {field} = {option}";
+                        }
                     }
                 }
                 dynamicParam.Add("$where", where);
@@ -356,6 +389,84 @@ namespace MISA.Infrastructure.Repository
                 var totalPageNumber = Math.Ceiling((decimal)((decimal)totalRecord / (decimal)pageSize));
                 _pagingResult.TotalPageNumber = (int)totalPageNumber;
                 return _pagingResult;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+        }
+
+        public bool CheckCodeExist(Guid productId, string SKUCode)
+        {
+            try
+            {
+                var dynamicParam = new DynamicParameters();
+                dynamicParam.Add("$SKUCode", SKUCode);
+                Product product = _dbConnection.QueryFirstOrDefault<Product>("Proc_GetProductBySKUCode", param: dynamicParam, commandType: CommandType.StoredProcedure);
+                if (product != null)
+                {
+                    if (productId == Guid.Empty)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        if (product.SKUCode != null && product.ProductId != productId)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
+
+        public bool ValidateCode(Guid productId, string productCode)
+        {
+            try
+            {
+                var dynamicParam = new DynamicParameters();
+                dynamicParam.Add("$ProductCode", productCode);
+                Product product = _dbConnection.QueryFirstOrDefault<Product>("Proc_GetProductByProductCode", param: dynamicParam, commandType: CommandType.StoredProcedure);
+                if (product != null)
+                {
+                    if (productId == Guid.Empty)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        if (product.ProductCode != null && product.ProductId != productId)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
+
+        public string AutoGenSKUCode(string productName)
+        {
+            try
+            {
+                var dynamicParam = new DynamicParameters();
+                dynamicParam.Add("$ProductName", productName);
+                var skuCode = _dbConnection.QueryFirstOrDefault<string>("Proc_GetSKUCodeByName", param: dynamicParam, commandType: CommandType.StoredProcedure);
+                return skuCode;
             }
             catch (Exception ex)
             {
@@ -393,6 +504,13 @@ namespace MISA.Infrastructure.Repository
             }
         }
 
+        /// <summary>
+        /// Hàm chuyển dữ liệu table trong dataset về 1 list object   
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataTable"></param>
+        /// <returns></returns>
+        /// Created By: Ngọc 01/10/2021
         private IEnumerable<T> ConvertDataTableToList<T>(DataTable dataTable)
         {
             var result = new List<T>();
@@ -407,6 +525,13 @@ namespace MISA.Infrastructure.Repository
             return result;
         }
 
+        /// <summary>
+        /// Hàm lấy từng thuộc tính để đóng gói thành thực thể  
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataTable"></param>
+        /// <returns></returns>
+        /// Created By: Ngọc 01/10/2021
         private static T GetItem<T>(DataRow dr)
         {
             Type temp = typeof(T);
@@ -425,6 +550,12 @@ namespace MISA.Infrastructure.Repository
             return obj;
         }
 
+        /// <summary>
+        /// Chuyển dữ liệu về mảng các bảng 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// Created By: Ngọc 01/10/2021
         private DataSet ConvertDataReaderToDataSet(IDataReader data)
         {
             DataSet ds = new DataSet();

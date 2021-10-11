@@ -52,13 +52,16 @@ namespace MISA.EShop.API
 
             // Service DI
             services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<IProductGroupService, ProductGroupService>();
+            services.AddScoped<IProductGroupService, ProductGroupService>(); 
             services.AddScoped<IUnitService, UnitService>();
+            services.AddScoped<IPictureService, PictureService>();
+            
 
             // Repository DI
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductGroupRepository, ProductGroupRepository>();
             services.AddScoped<IUnitRepository, UnitRepository>();
+            services.AddScoped<IPictureRepository, PictureRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,6 +93,8 @@ namespace MISA.EShop.API
             {
                 endpoints.MapControllers();
             });
+
+            app.UseStaticFiles();
         }
     }
 }

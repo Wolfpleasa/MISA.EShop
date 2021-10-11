@@ -8,6 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.IO;
+using Newtonsoft.Json;
+using MISA.Core.CommonFn;
+using MISA.Core.Enumeration;
 
 namespace MISA.EShop.API.Controllers
 {
@@ -42,24 +46,18 @@ namespace MISA.EShop.API.Controllers
             try
             {
                 var products = _productRepository.GetAll();
-                
-                if(products.Count == 0)
+
+                if (products.Count == 0)
                 {
                     return NoContent();
                 }
 
                 return Ok(products);
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return BadRequest(newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -84,39 +82,43 @@ namespace MISA.EShop.API.Controllers
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return StatusCode(500, newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
+        /// <summary>
+        /// Hàm lấy hàng hóa(các hàng hóa chi tiết nằm trong thuộc tính của cha)
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
         [HttpGet("detail/{productId}")]
         public IActionResult GetProductDetailById(Guid productId)
         {
             try
             {
                 Product products = _productRepository.GetProductWithDetail(productId);
-
-
                 return Ok(products);
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return StatusCode(500, newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
+            }
+        }
+
+        [HttpPost("getNewCode")]
+        public IActionResult AutoGenSKUCode(Product product)
+        {
+            try
+            {
+                ServiceResult serviceResult = _productService.AutoGenSKUCode(product.ProductName);
+                return Ok(serviceResult.Data);
+            }
+            catch (Exception ex)
+            {
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -141,15 +143,8 @@ namespace MISA.EShop.API.Controllers
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return StatusCode(500, newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -159,12 +154,28 @@ namespace MISA.EShop.API.Controllers
         /// <returns>Danh sách hàng hóa</returns>
         /// Created By: Ngọc 25/09/2021
         [HttpPost]
-        public IActionResult InsertProduct(Product product)
+        public IActionResult InsertProduct([FromForm] IFormFile formFile, [FromForm] string data)
         {
             try
             {
-                var serviceResult = _productService.Add(product);
-                if (serviceResult.isValid)
+                Product product = JsonConvert.DeserializeObject<Product>(data);
+                Picture picture = new Picture();
+                if (formFile != null)
+                {
+                    picture.PictureId = Guid.NewGuid();
+                    picture.PictureName = picture.PictureId.ToString();
+                    picture.PicturePath = "images/products/";
+                    picture.PictureTail = Path.GetExtension(formFile.FileName);
+                    picture.Type = 1;
+
+                    product.PictureId = picture.PictureId;
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images\products", picture.PictureName + picture.PictureTail);
+                    var fileStream = new FileStream(filePath, FileMode.Create);
+                    formFile.CopyToAsync(fileStream);
+                }
+
+                var serviceResult = _productService.Add(product, picture);
+                if (serviceResult.isValid && (int)serviceResult.Data != 0)
                 {
                     return StatusCode(201, serviceResult.Data);
                 }
@@ -172,22 +183,18 @@ namespace MISA.EShop.API.Controllers
                 {
                     var newObj = new
                     {
-                        userMsg = serviceResult.Message
+                        userMsg = serviceResult.Message,
+                        dataErr = serviceResult.Data,
                     };
                     return BadRequest(newObj);
                 }
+
+
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return StatusCode(500, newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -197,11 +204,33 @@ namespace MISA.EShop.API.Controllers
         /// <returns></returns>
         /// Created By: Ngọc 25/09/2021
         [HttpPut("{productId}")]
-        public IActionResult UpdateProduct(Product product, Guid productId)
+        public IActionResult UpdateProduct(Guid productId, [FromForm] IFormFile formFile, [FromForm] string data)
         {
             try
             {
-                var serviceResult = _productService.Edit(product, productId);
+                // Chuyển dữ liệu về đối tượng hàng hóa
+                Product product = JsonConvert.DeserializeObject<Product>(data);
+
+                Picture picture = new Picture();
+                if (formFile != null)
+                {
+                    picture.PictureId = Guid.NewGuid();
+                    picture.PictureName = picture.PictureId.ToString();
+                    picture.PicturePath = "images/products/";
+                    picture.PictureTail = Path.GetExtension(formFile.FileName);
+                    picture.Type = 1;
+
+                    product.PictureId = picture.PictureId;
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images\products", picture.PictureName + picture.PictureTail);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    var fileStream = new FileStream(filePath, FileMode.Create);
+                    formFile.CopyToAsync(fileStream);
+                }
+
+                var serviceResult = _productService.Edit(product, productId, picture);
                 if (serviceResult.isValid)
                 {
                     return StatusCode(200, serviceResult.Data);
@@ -217,15 +246,8 @@ namespace MISA.EShop.API.Controllers
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return StatusCode(500, newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -239,15 +261,8 @@ namespace MISA.EShop.API.Controllers
             }
             catch (Exception ex)
             {
-                var newObj = new
-                {
-                    devMsg = ex.Message,
-                    userMsg = Core.Properties.ResourceVN.Error_Message_UserVN,
-                    errorCode = "misa-001",
-                    moreInfo = @"https:/openapi.misa.com.vn/errorcode/misa-001",
-                    traceId = ""
-                };
-                return StatusCode(500, newObj);
+                var newObj = CommonFn.ObjError(ex.Message);
+                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
         #endregion

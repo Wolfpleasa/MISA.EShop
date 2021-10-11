@@ -28,6 +28,22 @@ export default class Enumeration {
         Edit: 1, // Sửa
         Duplicate: 2, // Nhân bản
         Delete: 3, // Xóa
+    };
+
+    static OperatorWord = {
+        Contain: 0, //Chứa
+        Equal: 1, //Bằng
+        StartWith: 2, // Bắt đầu bằng
+        EndWith: 3, // Kết thúc bằng
+        NotContain: 4, // Không chứa
+    }
+
+    static OperatorNumber = {
+        Lower: 1, //Bằng
+        Equal: 0, //Nhỏ hơn 
+        LE: 2, // Nhỏ hơn hoặc bằng
+        Greater: 3, // Lớn hơn
+        GE: 4, // Lớn hơn hoặc bằng
     }
 
     // phân biệt các button trong form detail
@@ -41,17 +57,10 @@ export default class Enumeration {
     // Các trạng thái Api
     static Status = {
         OK: 200, // Api có kết quả
-        NoContent: 204, // Api có kết quả trống
+        NoContent: 204, // Api có kết quả rỗng
         BadRequest: 400, // Dữ liệu gửi lên bị lỗi
         NotFound: 404, // Không tìm thấy
-    }
-
-    // Các trạng thái popup
-    static Popup = {
-        Warning: "warning-popup",
-        Notify: "notify-popup",
-        Confirm: "confirm-popup",
-        Export: "export-popup",
+        ServerError: 500, // Lỗi server
     }
 
     // Nội dung các nút 
@@ -69,11 +78,5 @@ export default class Enumeration {
         Error: "message-red",
         Notify: "message-yellow",
         Complete: "message-green",
-    }
-
-    // Các trạng thái response
-    static Response = {
-        Yes: "Có",
-        Save: "Cất",
     }
 }

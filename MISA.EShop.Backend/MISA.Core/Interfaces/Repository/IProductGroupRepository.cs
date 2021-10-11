@@ -21,14 +21,14 @@ namespace MISA.Core.Interfaces.Repository
         /// </summary>
         /// <returns></returns>
         /// Created By: Ngọc 25/09/2021
-        IEnumerable<ProductGroup> Add(ProductGroup productGroup);
+        int Add(ProductGroup productGroup);
 
         /// <summary>
         /// Hàm lấy nhóm hàng hóa theo tên
         /// </summary>
         /// <returns></returns>
         /// Created By: Ngọc 25/09/2021
-        IEnumerable<ProductGroup> GetProductGroupByName(string productGroupName);
+        ProductGroup GetProductGroupByName(string productGroupName);
 
         /// <summary>
         /// Hàm check trùng tên nhóm hàng hóa

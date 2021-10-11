@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 namespace MISA.Core.Enumeration
 {
     public class MISAEnum
-    {
+    {   
+        /// <summary>
+        /// Các toán tử liên quan đến chuỗi
+        /// </summary>
         public enum MISAStringOperator
         {
             Contain = 0,
@@ -17,6 +20,9 @@ namespace MISA.Core.Enumeration
             NotContain = 4,
         }
 
+        /// <summary>
+        /// Toán tử liên quan đến tiền
+        /// </summary>
         public enum MISASNumberOperator
         {
             Equal = 0,
@@ -25,11 +31,15 @@ namespace MISA.Core.Enumeration
             Greater = 3,
             GreaterOrEqual = 4,
         }
-        public enum DataType
+
+        /// <summary>
+        /// Trạng thái trả về 
+        /// </summary>
+        public enum HTTPStatus
         {
-            String = 0,
-            Integer = 1,
-            Double = 2,
+            Ok = 200,
+            Created = 201,
+            ServerError = 500,
         }
     }
 }
