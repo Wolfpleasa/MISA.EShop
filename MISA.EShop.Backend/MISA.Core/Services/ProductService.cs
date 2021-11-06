@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MISA.Core.Entities;
+using MISA.Core.Enumeration;
 using MISA.Core.Interfaces.Repository;
 using MISA.Core.Interfaces.Services;
 using MISA.Core.MISAAttribute;
@@ -46,7 +47,7 @@ namespace MISA.Core.Services
             {
                 var productDetails = product.ProductDetails;
                 for (int i = 0; i < productDetails.Count(); i++)
-                {
+                {   
                     isValid = Validate(Guid.Empty, productDetails[i]);
                 }            
             }
@@ -68,10 +69,10 @@ namespace MISA.Core.Services
                 var productDetails = product.ProductDetails;
                 for (int i = 0; i < productDetails.Count(); i++)
                 {   
-                    if(productDetails[i].FlagMode == 0)
+                    if(productDetails[i].FlagMode == (int)MISAEnum.FlagMode.Add)
                     {
                         isValid = Validate(Guid.Empty, productDetails[i]);
-                    }else if(productDetails[i].FlagMode == 1)
+                    }else if(productDetails[i].FlagMode == (int)MISAEnum.FlagMode.Edit)
                     {
                         isValid = Validate(productDetails[i].ProductId, productDetails[i]);
                     }

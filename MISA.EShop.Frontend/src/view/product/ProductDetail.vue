@@ -91,11 +91,13 @@
           type="text"
           FieldName="PurchasePrice"
           maxlength="20"
+          :onlyHasNumber="true"
           ref="txtPurchasePrice"
           subClass="price"
+     
           v-model="product.PurchasePrice"
-          :initValue="product.PurchasePrice"
-          @convertMoney="convertMoney"
+          :initMoney="product.PurchasePrice"
+      
         />
 
         <Input
@@ -104,11 +106,12 @@
           type="text"
           FieldName="SellingPrice"
           maxlength="20"
+          :onlyHasNumber="true"
           subClass="price"
           ref="txtSellingPrice"
           v-model="product.SellingPrice"
-          :initValue="product.SellingPrice"
-          @convertMoney="convertMoney"
+          :initMoney="product.SellingPrice"
+       
         />
 
         <ComboBox
@@ -127,7 +130,7 @@
         />
       </div>
       <div class="pd-l-10 d-flex">
-        <CheckBox :checked="check" @clickCheckBox="clickCheckBox" />
+        <CheckBox :checked="check" @clickCheckBox="clickCheckBox" v-model="check"/>
         <div class="ml-5">Hiện thị trên màn hình bán hàng</div>
         <div class="quiz"></div>
       </div>
@@ -165,7 +168,6 @@
           type="text"
           FieldName="Description"
           maxlength="255"
-          subClass="description"
           ref="txtDescription"
           v-model="product.Description"
           :initValue="product.Description"
@@ -179,7 +181,7 @@
       </div>
     </div>
 
-      <div class="save-or-cancel">
+    <div class="save-or-cancel">
       <div class="p-relative tt-field">
         <ButtonIcon
           iconName="icon-save"
@@ -266,6 +268,7 @@ export default {
       property: "",
       defaultName: "",
       initValue: "",
+      initMoney: 0,
       reFocus: false,
       check: true,
 
@@ -287,9 +290,10 @@ export default {
       let me = this;
       if (me.formMode == Enumeration.FormMode.Add) {
         me.resetFormDetail();
-        this.colors = [];
-        this.products = [];
-        this.productDefault = [];
+        me.colors = [];
+        me.products = [];
+        me.productDefault = [];
+        me.product.CreateDate = Number(new Date());
       }
       if (me.formMode == Enumeration.FormMode.Edit) {
         me.resetFormDetail();
@@ -306,10 +310,12 @@ export default {
       }
       if (me.formMode == Enumeration.FormMode.Duplicate) {
         me.resetFormDetail();
+       
         axios
           .get(`${Constant.LocalUrl}/Products/detail/${me.productId}`)
           .then((res) => {
             me.product = res.data;
+             me.product.CreateDate = Number(new Date());
             me.productDefault = [...me.product.ProductDetails];
             me.bindingData();
             //me.product.SKUCode = ;
@@ -395,8 +401,12 @@ export default {
      * Created By: Ngọc 01/10/2021
      */
     addInfomation(hidePopup, fieldName) {
-      this.property = fieldName;
-      this.$emit("hidePopupInfo", hidePopup, fieldName);
+      try {
+        this.property = fieldName;
+        this.$emit("hidePopupInfo", hidePopup, fieldName);
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
@@ -405,15 +415,6 @@ export default {
      */
     bindingData() {
       const me = this;
-      if (me.product.SellingPrice != null) {
-        me.product.SellingPrice = CommonFn.formatMoney(me.product.SellingPrice);
-      }
-
-      if (me.product.PurchasePrice != null) {
-        me.product.PurchasePrice = CommonFn.formatMoney(
-          me.product.PurchasePrice
-        );
-      }
 
       if (me.product.Display == Enumeration.Display.Yes) {
         me.check = true;
@@ -443,8 +444,10 @@ export default {
      */
     addProduct() {
       let me = this;
+
       me.formatData();
       let formData = new FormData();
+
       formData.append("formFile", me.formFile);
       formData.append("data", JSON.stringify(me.product));
       axios
@@ -524,18 +527,6 @@ export default {
      */
     formatData() {
       if (this.product) {
-        if (this.product.SellingPrice) {
-          this.product.SellingPrice = CommonFn.formatNumber(
-            this.product.SellingPrice
-          );
-        }
-
-        if (this.product.PurchasePrice) {
-          this.product.PurchasePrice = CommonFn.formatNumber(
-            this.product.PurchasePrice
-          );
-        }
-
         if (this.product.ProductGroupId == "")
           this.product.ProductGroupId = null;
         if (this.product.UnitId == "") this.product.UnitId = null;
@@ -543,16 +534,6 @@ export default {
 
       if (this.product.ProductDetails) {
         this.product.ProductDetails.forEach((product) => {
-          if (product.SellingPrice) {
-            product.SellingPrice = CommonFn.formatNumber(product.SellingPrice);
-          }
-
-          if (product.PurchasePrice) {
-            product.PurchasePrice = CommonFn.formatNumber(
-              product.PurchasePrice
-            );
-          }
-
           if (product.ProductGroupId == "") product.ProductGroupId = null;
           if (product.UnitId == "") product.UnitId = null;
         });
@@ -596,15 +577,14 @@ export default {
         // tạo product child
         let productDetail = {};
         productDetail.Color = color;
-        let colorArr = color.split(" ");
-        colorArr = colorArr.map((c) =>
-          CommonFn.removeVietnameseTones(c.charAt(0))
-        );
         productDetail.ProductName = `${this.product.ProductName} (${color})`;
-        productDetail.SKUCode = `${this.product.SKUCode}-${colorArr.join("")}`;
+
+        productDetail.SKUCode = `${this.product.SKUCode}-${CommonFn.removeVietnameseTones(CommonFn.genSKUCodeDetail(color))}`;
         if (this.formMode != Enumeration.FormMode.Add) {
           productDetail.ParentId = this.productId;
         }
+
+        productDetail.ProductCode = `${this.product.SKUCode}-${Number(new Date())}`;
         // thêm vào mảng product.ProductDetails
         if (this.product.ProductDetails && this.product.ProductDetails.length) {
           this.$set(this.product, "ProductDetails", [
@@ -635,7 +615,7 @@ export default {
     },
 
     /**
-     * Hàm bấm CheckBox
+     * Hàm bấm CheckBox hiển thị
      * Created By: Ngọc 23/09/2021
      */
     clickCheckBox() {
@@ -662,8 +642,6 @@ export default {
       newEntity.PictureId = "";
       this.product = newEntity;
       this.formFile = null;
-      // gọi hàm lấy mã hàng hóa mới
-      //this.getNewCode();
       // bỏ các tooltip cảnh báo nếu đang lỗi
       this.removeError();
     },
@@ -684,8 +662,12 @@ export default {
      * Created By: Ngọc 22/09/2021
      */
     btnDialogCancelOnClick() {
-      let me = this;
-      me.$emit("btnDialogCancelOnClick");
+      try {
+        let me = this;
+        me.$emit("btnDialogCancelOnClick");
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
@@ -693,38 +675,24 @@ export default {
      * Ngọc 29/07/2021
      */
     btnSaveOnClick() {
-      let me = this;
+      try {
+        let me = this;
 
-      if (me.validateForm()) {
-        if (me.formMode == Enumeration.FormMode.Add) {
-          if (this.formFile == null) {
-            me.product.PictureId = ResourceVN.DEFAULT_PICTUREID;
+        if (me.validateForm()) {
+          if (me.formMode == Enumeration.FormMode.Add) {
+            if (this.formFile == null) {
+              me.product.PictureId = ResourceVN.DEFAULT_PICTUREID;
+            }
+            me.addProduct();
+          } else if (me.formMode == Enumeration.FormMode.Edit) {
+            me.editProduct();
+          } else if (me.formMode == Enumeration.FormMode.Duplicate) {
+            me.addProduct();
           }
-          me.addProduct();
-        } else if (me.formMode == Enumeration.FormMode.Edit) {
-          me.editProduct();
-        } else if (me.formMode == Enumeration.FormMode.Duplicate) {
-          me.addProduct();
         }
+      } catch (error) {
+        console.log(error);
       }
-    },
-
-    /**
-     * Lấy mã hàng hóa mới
-     * Ngọc 1/8/2021
-     */
-    getNewCode() {
-      let me = this;
-      axios
-        .get(`${Constant.LocalUrl}Products/NewProductCode`)
-        .then((res) => {
-          let newProduct = {};
-          newProduct.ProductCode = res.data;
-          me.product = newProduct;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
     },
 
     /**
@@ -738,10 +706,6 @@ export default {
       if (isValid) {
         isValid = me.isRequired();
       }
-
-      // if (isValid) {
-      //     isValid = me.validateCode(formMode, itemId);
-      // }
 
       return isValid;
     },
@@ -766,17 +730,6 @@ export default {
       }
 
       return isValid;
-    },
-
-    /**
-     * Hàm tự động format tiền
-     * Created By: Ngọc 28/09/2021
-     */
-    convertMoney(FieldName) {
-      let me = this;
-      let val = me.product[FieldName];
-      let val1 = CommonFn.formatNumber(val);
-      me.product[FieldName] = CommonFn.formatMoney(val1);
     },
 
     /**

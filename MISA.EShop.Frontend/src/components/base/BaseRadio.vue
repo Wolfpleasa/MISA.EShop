@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex pd-8">
+  <div class="d-flex pd-8 ml-8">
     <div v-if="labelText.length > 0">
       {{ labelText }} 
     </div>

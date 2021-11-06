@@ -6,7 +6,36 @@
       <div v-if="FieldName == 'PurchasePrice'" class="quiz"></div>
     </div>
     <div class="input-tooltip">
+      <textarea
+        v-if="FieldName == 'Description'"
+        :tabindex="tabindex"
+        :type="type"
+        :FieldName="FieldName"
+        :maxlength="maxlength"
+        v-model="inputValue"
+        @input="onInput($event.target.value)"
+        :rows="rows"
+        :cols="cols"
+      >
+      </textarea>
+
+      <money
+        v-else-if="FieldName.includes('Price')"
+        :tabindex="tabindex"
+        :type="type"
+        v-bind="money"
+        :onlyHasNumber="onlyHasNumber"
+        :FieldName="FieldName"
+        :maxlength="maxlength"
+        :class="['textbox-default', subClass]"
+        min="0"
+        v-model="moneyValue"
+        @input="inputMoney()"
+      >
+      </money>
+
       <input
+        v-else
         :tabindex="tabindex"
         :type="type"
         :placeholder="placeholder"
@@ -18,28 +47,30 @@
           { 'border-red width-smaller': hasBorderRed },
         ]"
         :obligate="obligate"
-        :onlyHasNumber="onlyHasNumber"
         ref="inputREF"
         v-model="inputValue"
         @input="onInput($event.target.value)"
         @blur="onBlur($event.target.value)"
       />
-      <RedPoint :hideRedPoint="hideRedPoint" />
+      <RedPoint :hideRedPoint="hideRedPoint" :redPointText="redPointText" />
     </div>
   </div>
 </template>
 
 <script>
 import { mixin as clickaway } from "vue-clickaway";
+import { Money } from "v-money";
 
 import RedPoint from "./BaseRedPoint.vue";
-import CommonFn from "../../common/common1";
+//import CommonFn from "../../common/common1";
+//import ResourceVN from "../../common/resourceVN";
 
 export default {
   mixins: [clickaway],
   name: "BaseInput",
   components: {
     RedPoint,
+    Money,
   },
 
   props: {
@@ -49,25 +80,39 @@ export default {
     placeholder: String,
     FieldName: String,
     initValue: String,
+    initMoney: Number,
     subClass: String,
     // xác định tự động cho con trỏ chuột vào ô mã nhân viên
     autoFocus: String,
     reFocus: Boolean,
     // Xác định các trường chỉ chứa số
-    onlyHasNumber: String,
+    onlyHasNumber: Boolean,
     // Xác định các trường bắt buộc
     obligate: String,
     // Độ dài tối đa
     maxlength: String,
+    rows: String,
+    cols: String,
+
+    min: String,
   },
   data() {
     return {
       // Giá trị/Nội dung hiện tại
       inputValue: "",
+      // Giá trị tiền hiện tại
+      moneyValue: 0,
       // Ẩn/hiện viền đỏ
       hasBorderRed: false,
       // Ẩn/hiện chấm than đỏ
       hideRedPoint: true,
+      //Nội dung
+      redPointText: "",
+      money: {
+        thousands: ".",
+        precision: 0,
+        masked: false,
+      },
     };
   },
 
@@ -78,27 +123,24 @@ export default {
      */
     onInput(inputValue) {
       let me = this;
+
       //emit thắng vào v-model của cha
       me.$emit("input", inputValue);
-
-      //format ô input tiền lương
-      if (me.FieldName.includes("Price")) {
-        me.$emit("convertMoney", me.FieldName);
-      }
 
       // Nếu các ô bắt buộc nhập đã có dữ liệu thì bỏ viền đỏ
       if (inputValue != "" && me.obligate == "true") {
         me.hasBorderRed = false;
         me.hideRedPoint = true;
       }
+    },
 
-      // Nếu các ô chỉ chứa chữ số đúng định dạng rồi thì bỏ viền đỏ
-      if (
-        !me.isNumber(CommonFn.formatNumber(inputValue)) &&
-        me.onlyHasNumber == "true"
-      ) {
-        me.hasBorderRed = false;
-        me.hideRedPoint = true;
+    inputMoney() {
+      let me = this;
+
+      //Các ô tiền không nhận chữ cái
+      if (me.onlyHasNumber) {
+        //format ô input tiền để hiện thị lên
+        me.$emit("input", this.moneyValue);
       }
     },
 
@@ -112,18 +154,12 @@ export default {
       if (inputValue == "" && me.obligate == "true") {
         me.hasBorderRed = true;
         me.hideRedPoint = false;
+        //me.redPointText = `${ResourceVN.CANNOT_EMPTY}`;
+        me.redPointText = "Vui lòng điền vào trường này.";
       }
 
-      if(inputValue != "" && me.FieldName == "ProductName"){
+      if (inputValue != "" && me.FieldName == "ProductName") {
         me.$emit("autoGenSKUCode");
-      }
-      // Nếu các ô chỉ chứa chữ số đúng định dạng rồi thì bỏ viền đỏ
-      if (
-        !me.isNumber(CommonFn.formatNumber(inputValue)) &&
-        me.onlyHasNumber == "true"
-      ) {
-        me.hasBorderRed = true;
-        me.hideRedPoint = false;
       }
     },
 
@@ -181,6 +217,10 @@ export default {
   watch: {
     initValue: function () {
       this.inputValue = this.initValue;
+    },
+
+     initMoney: function () {
+      this.moneyValue = this.initMoney;
     },
 
     reFocus: function () {

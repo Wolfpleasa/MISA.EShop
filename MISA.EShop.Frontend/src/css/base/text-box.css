@@ -49,18 +49,28 @@
     width: 438px;
 }
 
-.eshop-inp.description .textbox-default {
-    line-height: 1;
-    white-space: normal;
+.eshop-inp.description textarea {
+    resize: none;
+    outline: 0;
+    padding: 5px 10px;
+    border: 1px solid #c3c3c3;
+    border-radius: 3px;
+    box-sizing: border-box;
+    font-size: 13.5px;
+    font-family: roboto, Tahoma, sans-serif!important;
+    width: 430px;
+    height: 80px;
 }
 
-.textbox-default:hover {
+.textbox-default:hover,
+textarea:hover {
     cursor: pointer;
-    border-color: #636dde;
+    border: 1px solid #636dde !important;
 }
 
-.textbox-default:focus {
-    border-color: #636dde;
+.textbox-default:focus,
+textarea:focus {
+    border: 1px solid #636dde !important;
 }
 
 label {

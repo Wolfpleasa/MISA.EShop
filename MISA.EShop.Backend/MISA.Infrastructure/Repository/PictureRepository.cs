@@ -23,7 +23,7 @@ namespace MISA.Infrastructure.Repository
         public PictureRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("LocalDatabase");
-            _dbConnection = new MySqlConnection(_connectionString);
+           
         }
         #endregion
 
@@ -32,6 +32,7 @@ namespace MISA.Infrastructure.Repository
         {
             try
             {
+                _dbConnection = new MySqlConnection(_connectionString);
                 var dynamicParam = new DynamicParameters();
                 dynamicParam.Add("$PictureId", pictureId);
                 var picture = _dbConnection.QueryFirstOrDefault<Picture>("Proc_GetPictureById", param: dynamicParam, commandType: CommandType.StoredProcedure);

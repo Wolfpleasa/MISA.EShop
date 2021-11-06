@@ -4,8 +4,8 @@
             <div class="header-right">
                 <div :class="['product' , {'form-mode' : showFormDetail}]">
                     <div class="product-name">Hàng hóa</div>
-                    <div v-if ="mode.length>0" class = "fs-18">/</div>
-                    <div v-if ="mode.length>0" class = "mode">{{mode}}</div>
+                    <div v-if ="title.length>0" class = "fs-18">/</div>
+                    <div v-if ="title.length>0" class = "title">{{title}}</div>
                 </div>
                 <div class="user">
                     <div class="back">
@@ -38,7 +38,7 @@ export default {
             type: Boolean,
             default: false,
         },
-        mode: String,
+        title: String,
     },
 }
 </script>

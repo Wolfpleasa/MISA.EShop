@@ -167,23 +167,10 @@ export default {
       ) {
         this.$refs.dropdown.style.width = "auto";
       } else {
+        if(this.width < 137) this.width = 137;
         this.$refs.dropdown.style.width = this.width + "px";
       }
     },
-
-    // left: function () {
-    //   try {
-    //     let me = this;
-    //     if (me.left == 0) {
-    //       this.hideListDropdown = true;
-    //     } else {
-    //       this.hideListDropdown = false;
-    //       this.$refs.dropdown.style.left = this.left - 158 + "px";
-    //     }
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // },
 
     count: function () {
       try {
@@ -195,7 +182,7 @@ export default {
         } else {
           me.checkPos = me.left;
           this.hideListDropdown = false;
-          this.$refs.dropdown.style.left = this.left - 158 + "px";
+          this.$refs.dropdown.style.left = this.left + "px";
         }
       } catch (err) {
         console.log(err);

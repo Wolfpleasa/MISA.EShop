@@ -41,5 +41,15 @@ namespace MISA.Core.Enumeration
             Created = 201,
             ServerError = 500,
         }
+
+        /// <summary>
+        /// Trạng thái cờ
+        /// </summary>
+        public enum FlagMode
+        {
+            Add = 0,
+            Edit = 1,
+            Delete = 3,
+        }
     }
 }

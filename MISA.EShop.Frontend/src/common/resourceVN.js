@@ -12,6 +12,12 @@ export default class Resource {
         No: "Không", // Không
     }
 
+    static TitleHeader = {
+        Add: "Thêm mới",
+        Edit: "Sửa",
+        Duplicate: "Nhân bản",
+    }
+
     static DEFAULT_PICTUREID = "bdebe2cb-bccb-413e-aa18-089372975423";
 
     // Đối tượng
@@ -28,7 +34,8 @@ export default class Resource {
     static ERROR_MESSAGE_VN = "Có vấn đề xảy ra, Vui lòng liên hệ MISA.";
 
     // Thông báo lỗi ở form thông báo
-    static CANNOT_EMPTY = "Không được để trống các trường bắt buộc.";
+    static CANNOT_EMPTY = "Vui lòng điền vào trường này.";
+    static ERROR_TEXT = "Giá trị bạn chọn không có trong danh sách.";
     static ERROR_CODE = "Mã nhân viên sai định dạng.";
     static EMPLOYEE_CODE = "Mã nhân viên";
     static WRONG_DATE = "Ngày tháng không hợp lệ.";

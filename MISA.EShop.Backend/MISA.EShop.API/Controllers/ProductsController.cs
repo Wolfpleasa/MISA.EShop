@@ -83,7 +83,7 @@ namespace MISA.EShop.API.Controllers
             catch (Exception ex)
             {
                 var newObj = CommonFn.ObjError(ex.Message);
-                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
+                return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -103,7 +103,7 @@ namespace MISA.EShop.API.Controllers
             catch (Exception ex)
             {
                 var newObj = CommonFn.ObjError(ex.Message);
-                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
+                return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -118,7 +118,7 @@ namespace MISA.EShop.API.Controllers
             catch (Exception ex)
             {
                 var newObj = CommonFn.ObjError(ex.Message);
-                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
+                return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -144,7 +144,7 @@ namespace MISA.EShop.API.Controllers
             catch (Exception ex)
             {
                 var newObj = CommonFn.ObjError(ex.Message);
-                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
+                return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -171,7 +171,9 @@ namespace MISA.EShop.API.Controllers
                     product.PictureId = picture.PictureId;
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images\products", picture.PictureName + picture.PictureTail);
                     var fileStream = new FileStream(filePath, FileMode.Create);
+
                     formFile.CopyToAsync(fileStream);
+
                 }
 
                 var serviceResult = _productService.Add(product, picture);
@@ -194,7 +196,7 @@ namespace MISA.EShop.API.Controllers
             catch (Exception ex)
             {
                 var newObj = CommonFn.ObjError(ex.Message);
-                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
+                return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -222,12 +224,10 @@ namespace MISA.EShop.API.Controllers
 
                     product.PictureId = picture.PictureId;
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images\products", picture.PictureName + picture.PictureTail);
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
+
                     var fileStream = new FileStream(filePath, FileMode.Create);
                     formFile.CopyToAsync(fileStream);
+
                 }
 
                 var serviceResult = _productService.Edit(product, productId, picture);
@@ -247,7 +247,7 @@ namespace MISA.EShop.API.Controllers
             catch (Exception ex)
             {
                 var newObj = CommonFn.ObjError(ex.Message);
-                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
+                return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
 
@@ -262,7 +262,7 @@ namespace MISA.EShop.API.Controllers
             catch (Exception ex)
             {
                 var newObj = CommonFn.ObjError(ex.Message);
-                  return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
+                return StatusCode((int)MISAEnum.HTTPStatus.ServerError, newObj);
             }
         }
         #endregion

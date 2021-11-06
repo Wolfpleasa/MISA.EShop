@@ -1,6 +1,6 @@
 <template>
   <div @click="myClick()">
-    <Header :mode="mode" :showFormDetail="!hideFormDetail" />
+    <Header :title="title" :showFormDetail="!hideFormDetail" />
     <Menu />
     <div class="content">
       <ToolBar
@@ -14,8 +14,9 @@
       <Table
         :response="response"
         :count="count"
+        :refresh="refresh"
         @getId="getId"
-        @refreshOnClick="refreshOnClick"
+        @callLoader="callLoader"
         @btnEditOnClick="btnEditOnClick"
       />
     </div>
@@ -115,7 +116,7 @@ export default {
     return {
       //ProductList
       product: {},
-      mode: "",
+      title: "",
 
       //ToastMessage
       hideToastMessage: true,
@@ -148,7 +149,7 @@ export default {
       notifyMode: -1,
       response: "",
       bonusClass: "",
-
+      refresh: 0,
       count: 0,
     };
   },
@@ -189,25 +190,45 @@ export default {
     },
 
     /**
-     * Hàm Ẩn/hiện Loader
-     * Ngọc 12/8/2021
+     * Hàm bấm nạp
+     * Created By: Ngọc 28/09/2021
      */
     refreshOnClick() {
-      this.hideLoader = false;
-      setTimeout(() => {
-        this.hideLoader = true;
-      }, 1000);
+      try {
+        this.refresh++;
+        this.callLoader();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    /**
+     * Hàm Ẩn/hiện Loader
+     *  Created By: Ngọc 28/09/2021
+     */
+    callLoader() {
+      try {
+        this.hideLoader = false;
+        setTimeout(() => {
+          this.hideLoader = true;
+        }, 500);
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
-     * Hàm mở popup
+     * Hàm mở form chi tiết để thêm
      * Created By: Ngọc 25/09/2021
      */
     btnAddOnClick() {
-      let me = this;
-      me.hideFormDetail = false;
-      this.formMode = Enumeration.FormMode.Add;
-      this.mode = "Thêm mới";
+      try {
+        let me = this;
+        me.hideFormDetail = false;
+        this.formMode = Enumeration.FormMode.Add;
+        this.title = ResourceVN.TitleHeader.Add;
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
@@ -215,25 +236,15 @@ export default {
      * Created By: Ngọc 25/09/2021
      */
     btnEditOnClick() {
-      setTimeout(() => {
-        this.hideFormDetail = false;
-        this.formMode = Enumeration.FormMode.Edit;
-        this.mode = "Sửa";
-      }, 10);
-    },
-
-    /**
-     * Hàm bấm checkbox ở td được BaseCheckBox gửi lên
-     * Ngọc 1/8/2021
-     */
-    clickCheckboxTd(index) {
-      let me = this;
-      me.isSelected[index] = !me.isSelected[index];
-      me.HideBtnDelete = false;
-      me.HideBtnDuplicate = false;
-      setTimeout(function () {
-        me.checked = me.CheckAllCBTd();
-      }, 10);
+      try {
+        setTimeout(() => {
+          this.hideFormDetail = false;
+          this.formMode = Enumeration.FormMode.Edit;
+          this.title = ResourceVN.TitleHeader.Edit;
+        }, 10);
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
@@ -259,12 +270,8 @@ export default {
       this.checked = !this.checked;
       if (this.checked) {
         this.isSelected.fill(true);
-        this.HideBtnDelete = false;
-        this.HideBtnDuplicate = false;
       } else {
         this.isSelected.fill(false);
-        this.HideBtnDelete = true;
-        this.HideBtnDuplicate = true;
       }
     },
 
@@ -273,24 +280,28 @@ export default {
      * Created By: Ngọc 30/10/2021
      */
     async btnDeleteOnClick() {
-      let me = this;
-      await axios
-        .get(`${Constant.LocalUrl}/Products/${me.productId}`)
-        .then((res) => {
-          res.data.forEach((data) => {
-            if (data.ProductId == me.productId) {
-              Object.assign(me.product, data);
-            }
+      try {
+        let me = this;
+        await axios
+          .get(`${Constant.LocalUrl}/Products/${me.productId}`)
+          .then((res) => {
+            res.data.forEach((data) => {
+              if (data.ProductId == me.productId) {
+                Object.assign(me.product, data);
+              }
+            });
+          })
+          .catch((err) => {
+            console.log(err);
           });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      me.warningText = `${ResourceVN.CONFIRM_DELETE} <span>${me.product.SKUCode}-${me.product.ProductName}</span> ${ResourceVN.CONFIRM}`;
-      me.warning = `Xóa hàng hóa`;
+        me.warningText = `${ResourceVN.CONFIRM_DELETE} <span>${me.product.SKUCode}-${me.product.ProductName}</span> ${ResourceVN.CONFIRM}`;
+        me.warning = `Xóa hàng hóa`;
 
-      me.hideWarningPopup = false;
-      me.idPopup = ResourceVN.Popup.Warning;
+        me.hideWarningPopup = false;
+        me.idPopup = ResourceVN.Popup.Warning;
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
@@ -298,9 +309,13 @@ export default {
      * Created By: Ngọc 30/10/2021
      */
     btnDuplicateOnClick() {
-      this.hideFormDetail = false;
-      this.formMode = Enumeration.FormMode.Duplicate;
-      this.mode = "Nhân bản";
+      try {
+        this.hideFormDetail = false;
+        this.formMode = Enumeration.FormMode.Duplicate;
+        this.title = ResourceVN.TitleHeader.Duplicate;
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
@@ -308,82 +323,32 @@ export default {
      * Created By: Ngọc 30/10/2021
      */
     async btnConfirmOnClick(idPopup) {
-      let me = this;
-      // Nếu form cảnh báo xóa được gọi
-      me.hideWarningPopup = true;
-      if (idPopup == ResourceVN.Popup.Warning) {
-        await axios
-          .delete(`${Constant.LocalUrl}/Products/${me.productId}`)
-          .then(() => {
-            me.callToastMessage("Xóa dữ liệu thành công", "message-green");
-            me.isSelected = [];
-          })
-          .catch(() => {
-            me.callToastMessage(
-              "Có vấn đề xảy ra, không thể xóa dữ liệu",
-              "message-red"
-            );
-          });
-        let responseTime = Number(new Date());
-        me.response = `${responseTime}`;
-        me.refreshOnClick();
+      try {
+        let me = this;
+        // Nếu form cảnh báo xóa được gọi
+        me.hideWarningPopup = true;
+        if (idPopup == ResourceVN.Popup.Warning) {
+          await axios
+            .delete(`${Constant.LocalUrl}/Products/${me.productId}`)
+            .then(() => {
+              me.callToastMessage("Xóa dữ liệu thành công", "message-green");
+              me.isSelected = [];
+            })
+            .catch(() => {
+              me.callToastMessage(
+                "Có vấn đề xảy ra, không thể xóa dữ liệu",
+                "message-red"
+              );
+            });
+          let responseTime = Number(new Date());
+          me.response = `${responseTime}`;
+          me.callLoader();
+        }
+
+        me.idPopup = "";
+      } catch (error) {
+        console.log(error);
       }
-
-      me.idPopup = "";
-    },
-
-    /**
-     * Hàm lấy mã hàng hóa mới
-     * Ngọc 6/8/2021
-     */
-    getNewCode() {
-      return new Promise((resolve) => {
-        axios
-          .get(`${Constant.LocalUrl}Products/NewProductCode`)
-          .then((res) => {
-            console.log(res.data, Number(new Date()));
-            resolve(res.data);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
-    },
-
-    /**
-     * Hàm lấy hàng hóa theo id hàng hóa
-     * Ngọc 6/8/2021
-     */
-    getInfo(productId) {
-      return new Promise((resolve) => {
-        axios
-          .get(`${Constant.LocalUrl}Products/${productId}`)
-          .then((res) => {
-            let newProduct = res.data;
-            console.log(newProduct.FullName, Number(new Date()));
-            resolve(newProduct);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
-    },
-
-    /**
-     * Thêm hàng hóa được nhân bản
-     * Ngọc 6/8/2021
-     */
-    InsertDuplicate(productDuplicated) {
-      return new Promise((resolve) => {
-        axios
-          .post(`${Constant.LocalUrl}Products/`, productDuplicated)
-          .then(() => {
-            resolve(1);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
     },
 
     /**
@@ -391,8 +356,12 @@ export default {
      * Created By: Ngọc 30/10/2021
      */
     btnCancelOnClick() {
-      let me = this;
-      me.hideWarningPopup = true;
+      try {
+        let me = this;
+        me.hideWarningPopup = true;
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
@@ -400,10 +369,14 @@ export default {
      * Created By: Ngọc 22/09/2021
      */
     btnDialogCancelOnClick() {
-      let me = this;
-      me.hideFormDetail = true;
-      me.mode = "";
-      me.formMode = Enumeration.FormMode.None;
+      try {
+        let me = this;
+        me.hideFormDetail = true;
+        me.title = "";
+        me.formMode = Enumeration.FormMode.None;
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
@@ -420,7 +393,7 @@ export default {
       me.hideWarningPopup = true;
       let responseTime = Number(new Date());
       me.response = `${responseTime}`;
-      me.refreshOnClick();
+      me.callLoader();
     },
 
     /**

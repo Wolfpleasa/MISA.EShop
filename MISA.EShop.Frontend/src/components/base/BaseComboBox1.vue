@@ -5,28 +5,32 @@
       {{ labelText }}
     </div>
 
-    <div
-      class="combo-box-select mt-4"
-      v-on:keydown="keydownOnSelect($event)"
-      v-on:keyup.enter="chooseComboBoxItemByKey()"
-      ref="myComboBox"
-    >
-      <input
-        :tabindex="tabindex"
-        :placeholder="placeholder"
-        class="inp"
-        v-model="currentName"
-        ref="myInput"
-        @input="onInput($event.target.value)"
-        @blur="onBlur()"
-        @focus="onFocus()"
-      />
-      <div class="select-arrow" @click="selectOnClick">
-        <div :class="['arrow', rotate ? 'rot-180' : 'rot-0']"></div>
+    <div class="combo-box-tooltip">
+      <div
+        :class="['combo-box-select mt-4', { 'width-smaller': hasBorderRed }]"
+        v-on:keydown="keydownOnSelect($event)"
+        v-on:keyup.enter="chooseComboBoxItemByKey()"
+        ref="myComboBox"
+      >
+        <input
+          :tabindex="tabindex"
+          :placeholder="placeholder"
+          class="inp"
+          v-model="currentName"
+          ref="myInput"
+          @input="onInput($event.target.value)"
+          @blur="onBlur($event.target.value)"
+          @focus="onFocus()"
+        />
+        <div class="select-arrow" @click="selectOnClick">
+          <div :class="['arrow', rotate ? 'rot-180' : 'rot-0']"></div>
+        </div>
+        <div class="add-option" @click="addInfomation">
+          <div class="icon-plus"></div>
+        </div>
       </div>
-      <div class="add-option" @click="addInfomation">
-        <div class="icon-plus"></div>
-      </div>
+
+      <RedPoint :hideRedPoint="hideRedPoint" :redPointText="redPointText" />
     </div>
 
     <div :class="['combo-box', { 'd-none': dnone }]">
@@ -53,12 +57,15 @@ import axios from "axios";
 import { mixin as clickaway } from "vue-clickaway";
 
 import Constant from "../../common/constant1.js";
+import ResourceVN from "../../common/resourceVN.js";
+
+import RedPoint from "./BaseRedPoint.vue";
 export default {
   mixins: [clickaway],
   name: "BaseComboBox",
 
   components: {
- 
+    RedPoint,
   },
 
   props: {
@@ -89,12 +96,12 @@ export default {
       currentId: "",
       //slidedown/up
       active: false,
-      // border đỏ
-      hasNotValid: false,
-      //hiện/ẩn tooltip
+      // Ẩn/hiện viền đỏ
+      hasBorderRed: false,
+      // Ẩn/hiện chấm than đỏ
       hideRedPoint: true,
-      //nội dung tooltip
-      toolTipText: "",
+      //Nội dung
+      redPointText: "",
     };
   },
   methods: {
@@ -103,7 +110,11 @@ export default {
      * Created By: Ngọc 01/10/2021
      */
     addInfomation() {
-      this.$emit("addInfomation", false, this.FieldName);
+      try {
+        this.$emit("addInfomation", false, this.FieldName);
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
@@ -119,22 +130,26 @@ export default {
      * Created By: Ngọc 28/09/2021
      */
     onInput(value) {
-      let me = this;
-      this.rotate = true;
-      this.dnone = false;
-      this.active = true;
-      this.filterItems = this.items.filter((item) => {
-        return item[this.itemName].toLowerCase().includes(value.toLowerCase());
-      });
+      try {
+        let me = this;
+        me.rotate = true;
+        me.dnone = false;
+        me.active = true;
+        me.filterItems = me.items.filter((item) => {
+          return item[me.itemName].toLowerCase().includes(value.toLowerCase());
+        });
 
-      this.items.forEach(item => {
-        if(item[me.itemName] == value){
-          me.currentId = item[me.itemId];
-          me.$emit("chooseComboBoxItem", me.itemId, me.currentId);
+        if (me.filterItems.length == 0) {
+          me.hideRedPoint = false;
+          me.hasBorderRed = true;
+          me.redPointText = `${ResourceVN.ERROR_TEXT}`;
+        } else {
+          me.hideRedPoint = true;
+          me.hasBorderRed = false;
         }
-      })
-
-     
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**
@@ -159,8 +174,15 @@ export default {
      * Hàm blur ô nhập
      * Created By: Ngọc 28/09/2021
      */
-    onBlur() {
+    onBlur(value) {
+      let me = this;
       this.$refs.myComboBox.style.borderColor = "#c3c3c3";
+      this.items.forEach((item) => {
+        if (item[me.itemName] == value) {
+          me.currentId = item[me.itemId];
+          me.$emit("chooseComboBoxItem", me.itemId, me.currentId);
+        }
+      });
     },
 
     /**
@@ -234,12 +256,16 @@ export default {
      * Created By: Ngọc 28/09/2021
      */
     selectOnClick() {
-      let me = this;
-      me.rotate = !me.rotate;
-      me.dnone = !me.dnone;
-      me.active = !me.active;
-      if (me.rotate) {
-        me.$refs.myComboBox.style.borderColor = "#636dde";
+      try {
+        let me = this;
+        me.rotate = !me.rotate;
+        me.dnone = !me.dnone;
+        me.active = !me.active;
+        if (me.rotate) {
+          me.$refs.myComboBox.style.borderColor = "#636dde";
+        }
+      } catch (error) {
+        console.log(error);
       }
     },
 
@@ -248,9 +274,13 @@ export default {
      * Created By: Ngọc 28/09/2021
      */
     closeComboBox() {
-      this.rotate = false;
-      this.dnone = true;
-      this.active = false;
+      try {
+        this.rotate = false;
+        this.dnone = true;
+        this.active = false;
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     /**

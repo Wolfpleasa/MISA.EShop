@@ -28,8 +28,7 @@ namespace MISA.Infrastructure.Repository
         #region Constructor
         public ProductRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("LocalDatabase");
-            _dbConnection = new MySqlConnection(_connectionString);
+            _connectionString = configuration.GetConnectionString("LocalDatabase");      
             _pagingResult = new PagingResult();
         }
         #endregion
@@ -37,15 +36,18 @@ namespace MISA.Infrastructure.Repository
         #region Methods
         public int Add(Product product, Picture picture)
         {
+            var rowEffects = 0;
+            IDbTransaction transaction = null; 
             try
             {
-                int rowEffects = 0;
                 int count = 0;
                 int res = 0;
                 Guid productId = Guid.NewGuid();
-                _dbConnection.Open();
 
-                var transaction = _dbConnection.BeginTransaction();
+                _dbConnection = new MySqlConnection(_connectionString);
+                _dbConnection.Open();
+                transaction = _dbConnection.BeginTransaction();
+
                 var dynamicParam = new DynamicParameters();
                 // Thêm mới ảnh
                 var pictureParam = new DynamicParameters();
@@ -133,26 +135,34 @@ namespace MISA.Infrastructure.Repository
                 {
                     transaction.Rollback();
                 }
-                _dbConnection.Dispose();
-                return rowEffects;
+               
+                
             }
             catch (Exception ex)
             {
+                rowEffects = 0;
                 Console.WriteLine(ex);
-                return 0;
             }
+            finally{
+                transaction?.Dispose();
+                _dbConnection?.Dispose();
+            }
+            return rowEffects;
         }
 
         public int Edit(Product product, Guid productId, Picture picture)
         {
+            int rowEffects = 0;
+            IDbTransaction transaction = null;
             try
             {
-                int rowEffects = 0;
+                rowEffects = 0;
                 int count = 0;
                 int res = 0;
 
+                _dbConnection = new MySqlConnection(_connectionString);
                 _dbConnection.Open();
-                var transaction = _dbConnection.BeginTransaction();
+                transaction = _dbConnection.BeginTransaction();
                 var dynamicParam = new DynamicParameters();
                 var dynamicParamDetail = new DynamicParameters();
                 var pictureParam = new DynamicParameters();
@@ -250,68 +260,95 @@ namespace MISA.Infrastructure.Repository
                 else
                 {
                     transaction.Rollback();
-                }
-                _dbConnection.Dispose();
-                return rowEffects;
+                }          
                 
             }
             catch (Exception ex)
             {
+                rowEffects = 0;
                 Console.WriteLine(ex);
-                return 0;
             }
+            finally
+            {
+                transaction?.Dispose();
+                _dbConnection?.Dispose();
+            }
+            return rowEffects;
         }
 
         public int Delete(Guid productId)
         {
+            int rowEffects = 0;
             try
             {
+                _dbConnection = new MySqlConnection(_connectionString);
                 var dynamicParam = new DynamicParameters();
                 dynamicParam.Add("$ProductId", productId);
-                var rowEffects = _dbConnection.Execute("Proc_DeleteProduct", param: dynamicParam, commandType: CommandType.StoredProcedure);
-                return rowEffects;
+                rowEffects = _dbConnection.Execute("Proc_DeleteProduct", param: dynamicParam, commandType: CommandType.StoredProcedure);              
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return 0;
+                rowEffects = 0;
             }
+            finally
+            {
+                _dbConnection?.Dispose();
+            }
+
+            return rowEffects;
         }
 
         public List<Product> GetAll()
         {
+            List<Product> products = null;
             try
             {
-                var products = _dbConnection.Query<Product>("Proc_GetAllProduct", commandType: CommandType.StoredProcedure);
-                return (List<Product>)products;
+                _dbConnection = new MySqlConnection(_connectionString);
+                products = (List<Product>)_dbConnection.Query<Product>("Proc_GetAllProduct", commandType: CommandType.StoredProcedure);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return null;
+                products = null;
             }
+            finally
+            {
+                _dbConnection?.Dispose();
+            }
+
+            return products;
         }
 
         public List<Product> GetById(Guid productId)
         {
+            List<Product> products = null;
             try
             {
+                _dbConnection = new MySqlConnection(_connectionString);
                 var dynamicParam = new DynamicParameters();
                 dynamicParam.Add("$ProductId", productId);
-                var products = _dbConnection.Query<Product>("Proc_GetProductById", param: dynamicParam, commandType: CommandType.StoredProcedure);
-                return (List<Product>)products;
+                products = (List<Product>)_dbConnection.Query<Product>("Proc_GetProductById", param: dynamicParam, commandType: CommandType.StoredProcedure);
+                return products;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return null;
+                products = null;
             }
+            finally
+            {
+                _dbConnection?.Dispose();
+            }
+
+            return products;
         }
 
         public PagingResult GetPagingResult(List<PagingParam> pagingParams, int pageSize, int pageNumber)
         {
             try
             {
+                _dbConnection = new MySqlConnection(_connectionString);
                 var dynamicParam = new DynamicParameters();
                 dynamicParam.Add("$pageSize", pageSize);
                 dynamicParam.Add("$pageIndex", pageNumber);
@@ -381,26 +418,33 @@ namespace MISA.Infrastructure.Repository
                     }
                 }
                 dynamicParam.Add("$where", where);
+                dynamicParam.Add("$sort", "CreateDate");
                 dynamicParam.Add("$total", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 var products = _dbConnection.Query<Product>("Proc_PagingFilterSort", param: dynamicParam, commandType: CommandType.StoredProcedure);
                 var totalRecord = dynamicParam.Get<int>("$total");
                 _pagingResult.TotalRecord = totalRecord;
                 _pagingResult.Products = (List<Product>)products;
                 var totalPageNumber = Math.Ceiling((decimal)((decimal)totalRecord / (decimal)pageSize));
-                _pagingResult.TotalPageNumber = (int)totalPageNumber;
-                return _pagingResult;
+                _pagingResult.TotalPageNumber = (int)totalPageNumber;            
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return null;
+                _pagingResult = null;
             }
+            finally
+            {
+                _dbConnection?.Dispose();
+            }
+
+            return _pagingResult;
         }
 
         public bool CheckCodeExist(Guid productId, string SKUCode)
         {
             try
             {
+                _dbConnection = new MySqlConnection(_connectionString);
                 var dynamicParam = new DynamicParameters();
                 dynamicParam.Add("$SKUCode", SKUCode);
                 Product product = _dbConnection.QueryFirstOrDefault<Product>("Proc_GetProductBySKUCode", param: dynamicParam, commandType: CommandType.StoredProcedure);
@@ -418,12 +462,13 @@ namespace MISA.Infrastructure.Repository
                         }
                     }
                 }
-
+                _dbConnection.Dispose();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                _dbConnection.Dispose();
                 return false;
             }
         }
@@ -432,6 +477,7 @@ namespace MISA.Infrastructure.Repository
         {
             try
             {
+                _dbConnection = new MySqlConnection(_connectionString);
                 var dynamicParam = new DynamicParameters();
                 dynamicParam.Add("$ProductCode", productCode);
                 Product product = _dbConnection.QueryFirstOrDefault<Product>("Proc_GetProductByProductCode", param: dynamicParam, commandType: CommandType.StoredProcedure);
@@ -449,12 +495,13 @@ namespace MISA.Infrastructure.Repository
                         }
                     }
                 }
-
+                _dbConnection.Dispose();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                _dbConnection.Dispose();
                 return false;
             }
         }
@@ -463,14 +510,17 @@ namespace MISA.Infrastructure.Repository
         {
             try
             {
+                _dbConnection = new MySqlConnection(_connectionString);
                 var dynamicParam = new DynamicParameters();
                 dynamicParam.Add("$ProductName", productName);
                 var skuCode = _dbConnection.QueryFirstOrDefault<string>("Proc_GetSKUCodeByName", param: dynamicParam, commandType: CommandType.StoredProcedure);
+                _dbConnection.Dispose();
                 return skuCode;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                _dbConnection.Dispose();
                 return null;
             }
         }
@@ -479,6 +529,7 @@ namespace MISA.Infrastructure.Repository
         {
             try
             {
+                _dbConnection = new MySqlConnection(_connectionString);
                 Product product = null;
                 var dynamicParam = new DynamicParameters();
                 dynamicParam.Add("$ProductId", productId);
@@ -495,11 +546,13 @@ namespace MISA.Infrastructure.Repository
                         product.ProductDetails = productDetails;
                     }
                 }
+                _dbConnection.Dispose();
                 return product;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                _dbConnection.Dispose();
                 return null;
             }
         }
@@ -526,7 +579,7 @@ namespace MISA.Infrastructure.Repository
         }
 
         /// <summary>
-        /// Hàm lấy từng thuộc tính để đóng gói thành thực thể  
+        /// Hàm lấy từng thuộc tính của cột trong hàng để đóng gói thành thực thể  
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dataTable"></param>

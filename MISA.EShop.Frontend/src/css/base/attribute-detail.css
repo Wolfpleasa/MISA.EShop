@@ -4,14 +4,14 @@
     padding: 8px 16px 8px 8px;
     width: calc(100% - 24px);
     max-height: 237px;
-    height: fit-content;
 }
 
 .attrDetail {
     margin-left: 62.5px;
     width: calc(100% - 167px);
     min-width: 64px;
-    height: 237px;
+    height: auto;
+    max-height: 237px;
     background-color: #fff;
     overflow: auto;
     padding: 0;

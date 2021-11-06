@@ -26,9 +26,15 @@
       </div>
 
       &nbsp;Trang&nbsp;&nbsp;
-      <div class="btn page-number">
-        {{ currentPageNumber }}
-      </div>
+
+      <input
+        class="btn page-number"
+        type="text"
+        v-model="currentPageNumber"
+        @change="changeCurrentPageNumber"
+        @input="onInput($event.target.value)"
+      />
+
       &nbsp;trên {{ totalPageNumber }}&nbsp;&nbsp;
 
       <div class="p-relative tt-field">
@@ -124,9 +130,31 @@ export default {
      * Created By: Ngọc 27/09/2021
      */
     chooseQuantity(entityPerPage) {
-      this.$emit("chooseQuantity", entityPerPage);
+      this.$emit("chooseQuantity", entityPerPage, this.currentPageNumber);
       this.hideOption = true;
-      this.updatePage();
+    },
+
+    onInput(inpValue) {
+      let val = inpValue + "",
+        number = "";
+      for (let i = 0; i < val.length; i++) {
+        if (!isNaN(val[i])) number += val[i];
+      }
+
+      this.currentPageNumber = number ? parseInt(number) + "" : "";
+    },
+
+    /**
+     * Hàm bắt sự kiện nhập số trang
+     * Created By: Ngọc 27/09/2021
+     */
+    changeCurrentPageNumber() {
+      let me = this;
+      if (me.currentPageNumber < 1) me.currentPageNumber = 1;
+      else if (me.currentPageNumber > me.totalPageNumber)
+        me.currentPageNumber = me.totalPageNumber;
+
+      me.updatePage();
     },
 
     /**
@@ -170,18 +198,18 @@ export default {
   },
 
   watch: {
-    currentPageNumber: function () {
-      this.updatePage();
-    },
+    // currentPageNumber: function () {
+    //   this.updatePage();
+    // },
 
     totalPageNumber: function () {
       let me = this;
       me.currentPageNumber = Math.min(me.currentPageNumber, me.totalPageNumber);
     },
 
-    totalEntity: function () {
-      this.updatePage();
-    },
+    // totalEntity: function () {
+    //   this.updatePage();
+    // },
   },
 };
 </script>

@@ -22,12 +22,14 @@
 .red-point-field {
     position: absolute;
     background-color: #cf4c35;
-    width: 167px;
+    width: auto;
+    white-space: nowrap;
     padding: 4px 6px;
     height: 16px;
-    top: 20px;
+    top: -3px;
     line-height: 16px;
-    right: -78px;
+    right: -187px;
     color: #fff;
     display: none;
+    text-align: center;
 }

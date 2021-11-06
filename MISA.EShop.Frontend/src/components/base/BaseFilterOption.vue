@@ -32,7 +32,8 @@ export default {
      * Created By: Ngọc 26/09/2021
      */
     selectOnClick() {
-      let width = document.getElementsByClassName("filter-option")[0].offsetWidth;
+      let width = this.$refs.myComboBox.clientWidth;
+      //alert(width);
       let left = this.$refs.myComboBox.getBoundingClientRect().left;
       this.$emit("selectOnClick", this.filterField, left, width);
     },

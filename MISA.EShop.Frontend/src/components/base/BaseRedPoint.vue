@@ -1,6 +1,6 @@
 <template>
   <div :class="['red-point' ,{'d-none': hideRedPoint}]">
-      <div class="red-point-field">Vui lòng điền vào trường này.</div>
+      <div class="red-point-field" v-html="redPointText"></div>
   </div>
 </template>
 
@@ -10,12 +10,20 @@ export default {
 
   props: {
     hideRedPoint: Boolean,
+    redPointText: {
+      type: String,
+      default: "",
+    },
   },
 
   methods: {
   },
 
   watch: {
+    
+  },
+
+  mounted() {
   
   },
 };

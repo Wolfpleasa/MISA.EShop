@@ -5,7 +5,7 @@
     </div>
     <div class="attribute">
       <div class="attribute-name">{{ attributeName }}</div>
-      <ul class="color-list" v-on:keyup.enter="addToColorList($event)">
+      <ul class="color-list" v-on:keydown="addToColorList($event)">
         <li class="color-item" v-for="color in colors" :key="color">
           {{color}}
           <div class="icon-cancel-white" @click="deleteAttribute(color)"></div>
@@ -67,7 +67,7 @@ export default {
      */
     addToColorList(event) {
       try {
-        if (event.code == "Enter") {
+        if ((event.code == "Enter" || event.code == "Tab") && this.inputValue!="") {
           event.preventDefault();
           var color = this.inputValue.trim();
           var colors = [];

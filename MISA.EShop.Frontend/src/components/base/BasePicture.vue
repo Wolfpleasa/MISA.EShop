@@ -15,7 +15,7 @@
       <img :src="image" alt="" width="198px" height="122px">
 
       <div :class="['btn-image', {'d-flex': image != urlDefault}]">
-        <ButtonIcon @btn-click="choosePicture" buttonText="..." />
+        <ButtonIcon tabindex="0" @btn-click="choosePicture" buttonText="..." />
         <div @click="removePicture" v-if="image != urlDefault" class="icon-cancel"></div>
       </div>
       <input type="file" ref="myProduct" class="d-none" @change="chooseFile($event)">

@@ -5,7 +5,7 @@ export default class CommonFn {
 
     /**
      * Hàm format số tiền
-     * Created By: Ngọc 28/90/2021
+     * Created By: Ngọc 28/09/2021
      */
     static formatMoney(money) {
         if (money && !isNaN(money)) {
@@ -15,9 +15,13 @@ export default class CommonFn {
         }
     }
 
+    static convertMoney(money) {
+        return this.formatMoney(this.formatNumber(money));
+    }
+
     /**
      * Hàm format chữ số về bình thường
-     * Created By: Ngọc 28/90/2021
+     * Created By: Ngọc 28/09/2021
      */
     static formatNumber(number) {
         return number.replaceAll(".", "");
@@ -117,5 +121,15 @@ export default class CommonFn {
         }
 
         return sku + code;
+    }
+
+    static genSKUCodeDetail(str) {
+        let arr = str.split(" ");
+        let c = "";
+        for (let a of arr) {
+            //c = c + a.substring(0, 1).toUpperCase();
+            c = c + a.toUpperCase();
+        }
+        return c;
     }
 }

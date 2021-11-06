@@ -62,6 +62,11 @@ namespace MISA.Core.Entities
         public string Description { get; set; }
 
         /// <summary>
+        /// Ngày tạo
+        /// </summary>
+        public double? CreateDate { get; set; }
+
+        /// <summary>
         /// Khóa ngoại 
         /// </summary>
         public Guid? ParentId { get; set; }
