@@ -2,13 +2,34 @@ pipeline {
     agent any
 
     stages {
-        stage('CI') {
+        stage('Check .NET 5 Backend') {
             when {
                 changeRequest target: 'main'
             }
             steps {
-                echo 'Đang chạy CI cho PR vào main'
-                // Thay bằng lệnh build/test thực tế của dự án
+                dir('MISA.EShop.Backend') {
+                    sh '''
+                        dotnet --version
+                        dotnet restore
+                        dotnet build --no-restore --configuration Release
+                    '''
+                }
+            }
+        }
+
+        stage('Check Vue 2 Frontend') {
+            when {
+                changeRequest target: 'main'
+            }
+            steps {
+                dir('MISA.EShop.Frontend') {
+                    sh '''
+                        node --version
+                        npm --version
+                        npm ci
+                        npm run build
+                    '''
+                }
             }
         }
     }
