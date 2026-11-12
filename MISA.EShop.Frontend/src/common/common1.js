@@ -15,6 +15,18 @@ export default class CommonFn {
         }
     }
 
+    /**
+     * Hàm format số tiền
+     * Created By: Ngọc 28/09/2021
+     */
+    static formathihi(money) {
+        if (money && !isNaN(money)) {
+            return money.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1.");
+        } else {
+            return money;
+        }
+    }
+
     static convertMoney(money) {
         return this.formatMoney(this.formatNumber(money));
     }
