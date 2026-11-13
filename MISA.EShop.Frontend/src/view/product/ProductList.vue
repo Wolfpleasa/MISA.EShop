@@ -91,7 +91,7 @@ import ResourceVN from "../../common/resourceVN.js";
 import Header from "../../components/layout/TheHeader.vue";
 import Menu from "../../components/layout/TheMenu.vue";
 import ToolBar from "../../components/base/BaseToolBar1.vue";
-import Table from "../../components/base/BaseTable.vue";
+import Table from "../../components/base/BaseTabl.vue";
 import AlertPopup from "../../components/base/BaseAlertPopup.vue";
 import ToastMessage from "../../components/base/BaseToastMessage.vue";
 import Loader from "../../components/base/BaseLoader.vue";
